@@ -1,0 +1,56 @@
+<form [formGroup]="form" (ngSubmit)="register()">
+
+    <h2 class="text-center">Create a new account</h2>
+    <hr class="mb-4">
+
+    <section class="mb-4">
+        <label for="username" class="form-label">Username</label>
+        <div class="position-relative">
+            <input formControlName="username" autofocus
+                id="username" type="text" class="form-control icon-container-left" 
+                placeholder="CoolName">
+            <span class="material-icons icon-left">person</span>
+        </div>
+    </section>
+
+    <section class="mb-4">
+        <label for="password" class="form-label">Password</label>
+        <div class="position-relative">
+            <input formControlName="password" #pass
+                id="password" type="password" placeholder="Password"
+                class="form-control icon-container-left icon-container-right">
+            <span class="material-icons icon-left">lock</span>
+            <span class="material-icons icon-right cursor-pointer"
+                (click)="togglePasswordVisibility(pass)">
+                {{ pass.type === "password" ? "visibility" : "visibility_off" }}
+            </span>
+        </div>
+    </section>
+
+    <section class="mb-5">
+        <label for="confirm-password" class="form-label">Confirm Password</label>
+        <div class="position-relative">
+            <input formControlName="password" #pass_confirmation
+                id="password" type="password" placeholder="Password"
+                class="form-control icon-container-left icon-container-right">
+            <span class="material-icons icon-left">lock</span>
+            <span class="material-icons icon-right cursor-pointer"
+                (click)="togglePasswordVisibility(pass_confirmation)">
+                {{ pass_confirmation.type === "password" ? "visibility" : "visibility_off" }}
+            </span>
+        </div>
+    </section>
+
+    <section class="mb-4">
+        <button type="submit" class="btn btn-primary w-100 fw-semibold">Create account</button>
+    </section>
+
+    <section class="text-center">
+        <span>Already have an account?</span> <br>
+        <a routerLink="/auth/login"
+            class="link-primary">
+            Log In
+        </a>
+    </section>
+
+</form>

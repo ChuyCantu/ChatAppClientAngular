@@ -1,1 +1,26 @@
-/* You can add global styles to this file, and also import other style files */
+.cursor-pointer {
+    cursor: pointer;
+}
+
+.icon-left,
+.icon-right {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.icon-left {
+    left: 0.4rem;
+}
+
+.icon-right {
+    right: 0.4rem;
+}
+
+.icon-container-left {
+    padding-left: 2rem;
+}
+
+.icon-container-right {
+    padding-right: 2rem;
+}
