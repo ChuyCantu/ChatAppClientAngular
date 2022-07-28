@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { catchError } from 'rxjs';
 import { AuthService } from '../../services/auth.service';
 
 @Component({
@@ -18,8 +19,22 @@ export class LoginPageComponent {
                 private authService: AuthService) { }
 
     login(): void {
-        this.authService.login(this.form.get("username")?.value, 
-            this.form.get("password")?.value);
+        this.authService.login(this.form.get("username")?.value, this.form.get("password")?.value)
+            .subscribe({
+                next: (resp) => {
+                    if (resp.ok) {
+                        // navigate
+                    }
+                    else 
+                        console.log("Error");
+                },
+                error: (err) => {
+                    if (err.status === 400 || err.status === 401)
+                        console.log("Username or password invalid");
+                    else 
+                        console.log("Error");
+                }
+            });
     }
 
     togglePasswordVisibility(input: HTMLInputElement): void {

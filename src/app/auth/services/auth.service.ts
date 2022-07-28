@@ -1,6 +1,13 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Observable, tap, switchMap, of, catchError } from 'rxjs';
 import { environment } from 'src/environments/environment';
+
+export type AuthResponse = {
+    ok: boolean;
+    msg: string;
+    username?: string;
+};
 
 @Injectable({
     providedIn: 'root'
@@ -8,32 +15,73 @@ import { environment } from 'src/environments/environment';
 export class AuthService {
 
     apiUrl: string = environment.backendApiUrl;
+    private _username: string = "";
+
+    get username(): string {
+        return this._username;
+    }
 
     constructor(private http: HttpClient) { }
 
-    login(username: string, password: string): void {
-        const url = `${this.apiUrl}/auth/login`;
-        this.http.post(url, {
+    login(username: string, password: string): Observable<AuthResponse> {
+        const url = `${this.apiUrl}/api/auth/`;
+        return this.http.post<AuthResponse>(url, {
             username: username,
             password: password
-        }, { withCredentials: true }).subscribe({ next: (resp) => console.log("Login:", resp), 
-        error: (err) => {
-            if (err.status === 401) 
-                console.log("error no auth");
-            console.log(err);
-        }    
-        });
+        }, { 
+            withCredentials: true 
+        }).pipe(
+            tap((resp) => {
+                if (resp.ok && resp.username)
+                    this._username = resp.username;
+                else
+                    this._username = "";
+            })
+        );
     }
 
-    logout(): void {
-        const url = `${this.apiUrl}/auth/logout`;
-        this.http.delete(url, { withCredentials: true })
-            .subscribe((resp) => console.log("Logout:", resp));
+    logout(): Observable<AuthResponse> {
+        const url = `${this.apiUrl}/api/auth/`;
+        return this.http.delete<AuthResponse>(url, { withCredentials: true })
+            .pipe(
+                tap((resp) => this._username = "")
+            );
     }
 
-    isAuth(): void {
-        const url = `${this.apiUrl}/auth/test`;
-        this.http.get(url, { withCredentials: true })
-            .subscribe((resp) => console.log("Auth:", resp));
+    signup(username: string, password: string): Observable<AuthResponse> {
+        const url = `${this.apiUrl}/api/auth/new`;
+        return this.http.post<AuthResponse>(url, {
+            username: username,
+            password: password
+        }, {
+            withCredentials: true
+        }).pipe(
+            tap((resp) => {
+                if (resp.ok && resp.username)
+                    this._username = resp.username;
+                else
+                    this._username = "";
+            })
+        );
+    }
+
+    isAuth(): Observable<boolean> {
+        const url = `${this.apiUrl}/api/auth/`;
+        return this.http.get<AuthResponse>(url, { withCredentials: true })
+            .pipe(
+                switchMap((resp) => {
+                    if (!resp.ok) this._username = "";
+                    return of(resp.ok);
+                }),
+                catchError((err) => {
+                    this._username = "";
+                    return of(false);
+                })
+            );
+    }
+
+    isUsernameValid(username: string): Observable<AuthResponse> {
+        const url = `${this.apiUrl}/api/auth/verify/${username}`;
+        return this.http.get<AuthResponse>(url, { withCredentials: true });
     }
 }
