@@ -3,7 +3,8 @@
     <h2 class="text-center">Create a new account</h2>
     <hr class="mb-4">
 
-    <section class="mb-4">
+    <!-- Username -->
+    <section class="mb-1">
         <label for="username" class="form-label">Username</label>
         <div class="position-relative">
             <input formControlName="username" autofocus
@@ -11,9 +12,14 @@
                 placeholder="CoolName">
             <span class="material-icons icon-left">person</span>
         </div>
+
+        <span [class.hidden]="!isFieldValid('username')"
+            class="form-text text-danger">
+            The username must be 3 or more letters, numbers or _
+        </span>
     </section>
 
-    <section class="mb-4">
+    <section class="mb-1">
         <label for="password" class="form-label">Password</label>
         <div class="position-relative">
             <input formControlName="password" #pass
@@ -25,9 +31,14 @@
                 {{ pass.type === "password" ? "visibility" : "visibility_off" }}
             </span>
         </div>
+
+        <span [class.hidden]="!isFieldValid('password')"
+            class="form-text text-danger">
+            The username must be 6 to 12 characters
+        </span>
     </section>
 
-    <section class="mb-5">
+    <section class="mb-3">
         <label for="confirm-password" class="form-label">Confirm Password</label>
         <div class="position-relative">
             <input formControlName="confirm_password" #pass_confirmation
@@ -39,10 +50,20 @@
                 {{ pass_confirmation.type === "password" ? "visibility" : "visibility_off" }}
             </span>
         </div>
+
+        <span [class.hidden]="!isFieldValid('confirm_password')"
+            class="form-text text-danger">
+            The username must be 6 to 12 characters
+        </span>
     </section>
 
     <section class="mb-4">
-        <button type="submit" class="btn btn-primary w-100 fw-semibold">Create account</button>
+        <button type="submit" class="btn btn-primary w-100 fw-semibold" [disabled]="busy">
+            <span *ngIf="!busy; else spinner">Create account</span>
+            <ng-template #spinner>
+                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+            </ng-template>
+        </button>
     </section>
 
     <section class="text-center">
