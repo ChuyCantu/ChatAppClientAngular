@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { catchError, from } from 'rxjs';
+import Swal from 'sweetalert2';
 import { AuthService } from '../../services/auth.service';
 
 @Component({
@@ -35,13 +36,13 @@ export class LoginPageComponent {
                         this.router.navigateByUrl("/home");
                     }
                     else 
-                        console.log("Error");
+                        Swal.fire("Error", "Error", "error");
                 },
                 error: (err) => {
                     if (err.status === 400 || err.status === 401)
-                        console.log("Username or password invalid");
+                        Swal.fire("Error", "Username or password invalid", "error");
                     else 
-                        console.log("Error");
+                        Swal.fire("Error", "Error", "error");
                 }
             });
     }
