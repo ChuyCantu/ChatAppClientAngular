@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 
 @Component({
@@ -16,7 +17,8 @@ export class RegisterPageComponent {
     });
 
     constructor(private fb: FormBuilder,
-                private authService: AuthService) { }
+                private authService: AuthService,
+                private router: Router) { }
 
     signup(): void {
         if (this.form.invalid) {
@@ -30,7 +32,7 @@ export class RegisterPageComponent {
             .subscribe({
                 next: (resp) => {
                     if (resp.ok) {
-                        // navigate
+                        this.router.navigateByUrl("/home");
                     }
                     else 
                         console.log("Error");

@@ -2,10 +2,13 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { ChatRoutingModule } from './chat-routing.module';
+import { MainComponent } from './pages/main/main.component';
 
 
 @NgModule({
-    declarations: [],
+    declarations: [
+    MainComponent
+  ],
     imports: [
         CommonModule,
         ChatRoutingModule

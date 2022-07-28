@@ -66,12 +66,15 @@ export class AuthService {
         );
     }
 
-    isAuth(): Observable<boolean> {
+    isAuthenticated(): Observable<boolean> {
         const url = `${this.apiUrl}/api/auth/`;
         return this.http.get<AuthResponse>(url, { withCredentials: true })
             .pipe(
                 switchMap((resp) => {
-                    if (!resp.ok) this._username = "";
+                    if (resp.ok && resp.username) 
+                        this._username = resp.username
+                    else
+                        this._username = "";
                     return of(resp.ok);
                 }),
                 catchError((err) => {
