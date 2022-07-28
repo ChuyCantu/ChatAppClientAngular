@@ -1,8 +1,12 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+
 import Swal from 'sweetalert2';
+
 import { AuthService } from '../../services/auth.service';
+import { ValidatorService } from 'src/app/shared/validators/validator.service';
+import { AsyncUsernameValidatorService } from 'src/app/shared/validators/async-username-validator.service';
 
 @Component({
     selector: 'app-register-page',
@@ -12,16 +16,21 @@ import { AuthService } from '../../services/auth.service';
 export class RegisterPageComponent {
 
     form: FormGroup = this.fb.group({
-        username: ["", [Validators.required, Validators.minLength(3)]],
+        username: ["", [Validators.required, Validators.minLength(3)], [this.usernameValidator]],
         password: ["", [Validators.required, Validators.minLength(6), Validators.maxLength(12)]],
         confirm_password: ["", [Validators.required, Validators.minLength(6)]]
+    },
+    {
+        validators: [ this.validatorService.fieldsEqual("password", "confirm_password") ]
     });
 
     busy: boolean = false;
 
     constructor(private fb: FormBuilder,
                 private authService: AuthService,
-                private router: Router) { }
+                private router: Router,
+                private validatorService: ValidatorService,
+                private usernameValidator: AsyncUsernameValidatorService) { }
 
     signup(): void {
         if (this.form.invalid) {
@@ -41,14 +50,14 @@ export class RegisterPageComponent {
                         this.router.navigateByUrl("/home");
                     }
                     else 
-                        Swal.fire("Error", "Error", "error");
+                        Swal.fire("Error", resp.msg, "error");
                 },
                 error: (err) => {
                     this.busy = false;
                     if (err.status === 400 || err.status === 401)
                         Swal.fire("Error", "Username or password invalid", "error");
                     else 
-                        Swal.fire("Error", "Error", "error");
+                        Swal.fire("Error", err.error.msg, "error");
                 }
             });
     }

@@ -84,8 +84,14 @@ export class AuthService {
             );
     }
 
-    isUsernameValid(username: string): Observable<AuthResponse> {
+    isUsernameValid(username: string): Observable<boolean> {
         const url = `${this.apiUrl}/api/auth/verify/${username}`;
-        return this.http.get<AuthResponse>(url, { withCredentials: true });
+        return this.http.get<AuthResponse>(url, { withCredentials: true })
+            .pipe(
+                switchMap((resp) => {
+                    return of(resp.ok);
+                }),
+                catchError((err) => of(false))
+            );
     }
 }
