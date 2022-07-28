@@ -1,4 +1,4 @@
-<form [formGroup]="form" (ngSubmit)="register()">
+<form [formGroup]="form" (ngSubmit)="signup()">
 
     <h2 class="text-center">Create a new account</h2>
     <hr class="mb-4">
@@ -30,8 +30,8 @@
     <section class="mb-5">
         <label for="confirm-password" class="form-label">Confirm Password</label>
         <div class="position-relative">
-            <input formControlName="password" #pass_confirmation
-                id="password" type="password" placeholder="Password"
+            <input formControlName="confirm_password" #pass_confirmation
+                id="confirm-password" type="password" placeholder="Password"
                 class="form-control icon-container-left icon-container-right">
             <span class="material-icons icon-left">lock</span>
             <span class="material-icons icon-right cursor-pointer"

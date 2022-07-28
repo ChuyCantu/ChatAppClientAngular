@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { catchError } from 'rxjs';
+import { catchError, from } from 'rxjs';
 import { AuthService } from '../../services/auth.service';
 
 @Component({
@@ -19,7 +19,14 @@ export class LoginPageComponent {
                 private authService: AuthService) { }
 
     login(): void {
-        this.authService.login(this.form.get("username")?.value, this.form.get("password")?.value)
+        if (this.form.invalid) {
+            this.form.markAllAsTouched();
+            return;
+        }
+
+        const { username, password } = this.form.value;
+
+        this.authService.login(username, password)
             .subscribe({
                 next: (resp) => {
                     if (resp.ok) {

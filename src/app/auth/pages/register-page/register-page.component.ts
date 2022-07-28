@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
     selector: 'app-register-page',
@@ -14,10 +15,33 @@ export class RegisterPageComponent {
         confirm_password: ["", [Validators.required, Validators.minLength(6)]]
     });
 
-    constructor(private fb: FormBuilder) { }
+    constructor(private fb: FormBuilder,
+                private authService: AuthService) { }
 
-    register(): void {
-        console.log(this.form.value);
+    signup(): void {
+        if (this.form.invalid) {
+            this.form.markAllAsTouched();
+            return;
+        }
+
+        const { username, password, confirm_password } = this.form.value;
+
+        this.authService.signup(username, password, confirm_password)
+            .subscribe({
+                next: (resp) => {
+                    if (resp.ok) {
+                        // navigate
+                    }
+                    else 
+                        console.log("Error");
+                },
+                error: (err) => {
+                    if (err.status === 400 || err.status === 401)
+                        console.log("Username or password invalid");
+                    else 
+                        console.log("Error");
+                }
+            });
     }
 
     togglePasswordVisibility(input: HTMLInputElement): void {

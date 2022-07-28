@@ -26,8 +26,8 @@ export class AuthService {
     login(username: string, password: string): Observable<AuthResponse> {
         const url = `${this.apiUrl}/api/auth/`;
         return this.http.post<AuthResponse>(url, {
-            username: username,
-            password: password
+            username,
+            password
         }, { 
             withCredentials: true 
         }).pipe(
@@ -44,15 +44,16 @@ export class AuthService {
         const url = `${this.apiUrl}/api/auth/`;
         return this.http.delete<AuthResponse>(url, { withCredentials: true })
             .pipe(
-                tap((resp) => this._username = "")
+                tap((_) => this._username = "")
             );
     }
 
-    signup(username: string, password: string): Observable<AuthResponse> {
+    signup(username: string, password: string, confirm_password: string): Observable<AuthResponse> {
         const url = `${this.apiUrl}/api/auth/new`;
         return this.http.post<AuthResponse>(url, {
-            username: username,
-            password: password
+            username,
+            password,
+            confirm_password
         }, {
             withCredentials: true
         }).pipe(
