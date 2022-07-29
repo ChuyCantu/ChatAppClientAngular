@@ -26,14 +26,14 @@ export class MainComponent implements OnInit {
     }
 
     // Tests:
-    isMenuOpen: boolean = true;
+    isSidePanelOpen: boolean = true;
 
     openMenu(): void {
-        this.isMenuOpen = true;
+        this.isSidePanelOpen = true;
     }
 
     closeMenu(): void {
-        this.isMenuOpen = false;
+        this.isSidePanelOpen = false;
     }
 
     

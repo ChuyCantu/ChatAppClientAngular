@@ -7,13 +7,13 @@
 <hr> -->
 
 <section class="overflow-hidden">
-    <app-chat-menu [class.menu-collapsed]="!isMenuOpen"
+    <app-side-panel [class.menu-collapsed]="!isSidePanelOpen"
         class="menu bg-secondary"
-        ></app-chat-menu>
+        ></app-side-panel>
     
-    <app-chat-panel [class.chat-panel-expanded]="isMenuOpen"
+    <app-main-panel [class.chat-panel-expanded]="isSidePanelOpen"
         class="chat-panel bg-danger"
-        ></app-chat-panel>
+        ></app-main-panel>
 </section>
 
 <div class="temp-f">

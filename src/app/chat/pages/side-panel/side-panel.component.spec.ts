@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ChatMenuComponent } from './chat-menu.component';
+import { SidePanelComponent } from './side-panel.component';
 
-describe('ChatMenuComponent', () => {
-  let component: ChatMenuComponent;
-  let fixture: ComponentFixture<ChatMenuComponent>;
+describe('SidePanelComponent', () => {
+  let component: SidePanelComponent;
+  let fixture: ComponentFixture<SidePanelComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ ChatMenuComponent ]
+      declarations: [ SidePanelComponent ]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(ChatMenuComponent);
+    fixture = TestBed.createComponent(SidePanelComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
