@@ -25,4 +25,17 @@ export class MainComponent implements OnInit {
             .subscribe((resp) => this.router.navigateByUrl("/auth/login"));
     }
 
+    // Tests:
+    isMenuOpen: boolean = true;
+
+    openMenu(): void {
+        this.isMenuOpen = true;
+    }
+
+    closeMenu(): void {
+        this.isMenuOpen = false;
+    }
+
+    
+
 }

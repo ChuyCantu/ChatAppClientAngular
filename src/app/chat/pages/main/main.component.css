@@ -1,0 +1,55 @@
+.menu {
+    display: block;
+    height: 100vh;
+    left: 0;
+    position: fixed;
+    width: 100vh;
+    z-index: 0;
+
+    transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out;
+}
+
+.chat-panel {
+    display: block;
+    height: 100vh;
+    /* margin-left: 100vw; */
+    position: relative;
+    z-index: 1;
+
+    transition: margin-left 0.5s ease-in-out, transform 0.5s ease-in-out;
+}
+
+.menu-open {
+    opacity: 0.5;
+    transform: translateX(-20%);
+}
+
+@media (min-width: 576px) {
+    .menu {
+        width: 300px;
+    }
+
+    .chat-panel {
+        margin-left: 0;
+    }
+
+    .chat-panel-expanded {
+        margin-left: 300px;
+    }
+}
+
+@media (max-width: 575px) {
+    .chat-panel-expanded {
+        transform: translateX(100%);
+    }
+}
+
+.temp-f {
+    display: flex;
+    gap: 10px;
+    position: fixed;
+    z-index: 10;
+    top: 50%;
+    transform: translateY(-50%);
+    left: 10px;
+}

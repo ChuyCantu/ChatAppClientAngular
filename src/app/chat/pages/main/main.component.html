@@ -1,5 +1,22 @@
-<h1>Welcome <strong>{{ username }}</strong></h1>
+<!-- <h1>Welcome <strong>{{ username }}</strong></h1>
 
 <button (click)="logout()" class="btn btn-primary m-3">
     Logout
 </button>
+
+<hr> -->
+
+<section class="overflow-hidden">
+    <app-chat-menu [class.menu-collapsed]="!isMenuOpen"
+        class="menu bg-secondary"
+        ></app-chat-menu>
+    
+    <app-chat-panel [class.chat-panel-expanded]="isMenuOpen"
+        class="chat-panel bg-danger"
+        ></app-chat-panel>
+</section>
+
+<div class="temp-f">
+    <button class="btn btn-primary" (click)="openMenu()">Open</button>
+    <button class="btn btn-danger" (click)="closeMenu()">Close</button>
+</div>
