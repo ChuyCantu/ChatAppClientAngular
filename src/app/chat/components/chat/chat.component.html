@@ -9,9 +9,11 @@
     </section>
 
     <section class="d-flex align-items-end gap-2 px-2 my-2">
-        <!--+ Custom resizable text area -->
-        <div #input class="form-control auto-resizable-input thin-scrollbar" 
-            contenteditable="true" data-placeholder="Say something...">
+        <!--+ Custom resizable text area (wrapped to hide scrollbar) -->
+        <div class="auto-resizable-input-wrapper">
+            <div #input class="bg-white auto-resizable-input thin-scrollbar"
+                contenteditable="true" data-placeholder="Say something...">
+            </div>
         </div>
 
         <button (click)="send()" type="button"

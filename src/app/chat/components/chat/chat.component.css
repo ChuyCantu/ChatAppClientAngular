@@ -1,11 +1,21 @@
 /* Custom auto resizable text area */
+.auto-resizable-input-wrapper {
+    width: 100%;
+    border-radius: 1.2rem;
+    padding: 6px 0.6rem 6px 1rem;
+    background-color: white;
+    overflow: hidden;
+    height: auto;
+}
+
+.auto-resizable-input-wrapper:focus {
+    background-color: red;
+}
+
 .auto-resizable-input {
     overflow-y: auto;
     height: auto;
-
-    border-radius: 1.5rem;
-    padding-left: 1rem;
-    padding-right: 0.8rem;
+    outline: none;
 }
 
 .auto-resizable-input:empty:not(:focus)::before {

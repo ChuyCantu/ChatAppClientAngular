@@ -65,9 +65,7 @@ export class ChatComponent implements OnInit, AfterViewInit {
     ngAfterViewInit(): void {
         // Set max input height based on the initial height of the element
         const input: HTMLInputElement = this.inputRef.nativeElement;
-        input.style.maxHeight = `${input.clientHeight * 3.4}px`;
-
-        input.innerText = "asd\nada\nasdas\nasdads\nasda\nasd\nada\nasdas\nasdads\nasda\n"
+        input.style.maxHeight = `${input.clientHeight * 5}px`;
     }
 
     send(): void {
