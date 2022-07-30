@@ -2,7 +2,7 @@
 .auto-resizable-input-wrapper {
     width: 100%;
     border-radius: 1.2rem;
-    padding: 6px 0.6rem 6px 1rem;
+    padding: 6px 2rem 6px 1rem;
     background-color: white;
     overflow: hidden;
     height: auto;
@@ -23,6 +23,13 @@
     content: attr(data-placeholder);
     pointer-events: none;
     color: gray;
+}
+
+.emoji-button {
+    position: absolute;
+    right: 0.4rem;
+    bottom: 0.4rem;
+    cursor: pointer;
 }
 
 /* Send Button */

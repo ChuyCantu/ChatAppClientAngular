@@ -15,6 +15,8 @@ type Message = {
 export class ChatComponent implements OnInit, AfterViewInit {
 
     @ViewChild("input") inputRef!: ElementRef<HTMLInputElement>;
+
+    emojiPickerVisible: boolean = false;
     
     // TODO: Change this to an object containing the msg
     messages: Message[] = [
@@ -71,6 +73,8 @@ export class ChatComponent implements OnInit, AfterViewInit {
             e.stopPropagation();
             input.focus();
         });
+
+        input.innerText = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
     }
 
     send(): void {
@@ -83,6 +87,16 @@ export class ChatComponent implements OnInit, AfterViewInit {
             content: input.innerText
         });
         input.innerText = "";
+    }
+
+    emojiClick(emojiEvent: any): void {
+        const input: HTMLInputElement = this.inputRef.nativeElement;
+        input.innerText += emojiEvent.emoji.native;
+
+    }
+
+    toogleEmojiPickerVisibility(): void {
+        this.emojiPickerVisible = !this.emojiPickerVisible;
     }
 
     //+ Utility to apply grouping style to chat bubbles

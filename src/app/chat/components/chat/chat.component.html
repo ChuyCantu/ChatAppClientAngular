@@ -1,6 +1,6 @@
 <section class="d-flex flex-column h-100 bg-white">
 
-    <section class="messages px-2 mt-2">
+    <section class="messages px-2 mt-2 thin-scrollbar">
         <section *ngFor="let msg of messages; let i = index;"
             [ngClass]="msg.from === username ? 'msg-sent' : 'msg-received'"
             [class.msg-last]="isLastMessageOfGroup(i)">
@@ -8,12 +8,27 @@
         </section>
     </section>
 
+    <section [hidden]="!emojiPickerVisible" class="position-relative">
+        <emoji-mart set="twitter" 
+            [showPreview]="false" 
+            [enableFrequentEmojiSort]="true"
+            (emojiClick)="emojiClick($event)"
+            [perLine]="9"
+            style="position: absolute; bottom: 0">
+        </emoji-mart>
+    </section>
+
     <section class="d-flex align-items-end gap-2 px-2 my-2">
         <!--+ Custom resizable text area (wrapped to hide scrollbar) -->
-        <div class="auto-resizable-input-wrapper">
+        <div class="auto-resizable-input-wrapper position-relative">
             <div #input class="bg-white auto-resizable-input thin-scrollbar"
                 contenteditable="true" data-placeholder="Say something...">
             </div>
+
+            <span (click)="toogleEmojiPickerVisibility()"
+                class="material-icons text-muted emoji-button">
+                emoji_emotions
+            </span>
         </div>
 
         <button (click)="send()" type="button"
