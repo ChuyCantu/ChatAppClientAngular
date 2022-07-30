@@ -66,6 +66,11 @@ export class ChatComponent implements OnInit, AfterViewInit {
         // Set max input height based on the initial height of the element
         const input: HTMLInputElement = this.inputRef.nativeElement;
         input.style.maxHeight = `${input.clientHeight * 5}px`;
+
+        input.parentElement!.addEventListener("click", (e: MouseEvent) => {
+            e.stopPropagation();
+            input.focus();
+        });
     }
 
     send(): void {
