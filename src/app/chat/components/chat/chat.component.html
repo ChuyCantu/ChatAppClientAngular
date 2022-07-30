@@ -1,11 +1,13 @@
 <section class="d-flex flex-column h-100 bg-white">
 
     <section class="messages px-2 mt-2 thin-scrollbar">
+
         <section *ngFor="let msg of messages; let i = index;"
             [ngClass]="msg.from === username ? 'msg-sent' : 'msg-received'"
             [class.msg-last]="isLastMessageOfGroup(i)">
-            {{ msg.content }}
+            <p>{{ msg.content }}</p>
         </section>
+
     </section>
 
     <section [hidden]="!emojiPickerVisible" class="position-relative">
