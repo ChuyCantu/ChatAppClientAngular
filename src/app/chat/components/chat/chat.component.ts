@@ -73,8 +73,6 @@ export class ChatComponent implements OnInit, AfterViewInit {
             e.stopPropagation();
             input.focus();
         });
-
-        input.innerText = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
     }
 
     send(): void {
