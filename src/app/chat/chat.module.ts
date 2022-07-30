@@ -8,6 +8,7 @@ import { MainComponent } from './pages/main/main.component';
 import { MainPanelComponent } from './pages/main-panel/main-panel.component';
 import { SidePanelComponent } from './pages/side-panel/side-panel.component';
 import { ChatComponent } from './components/chat/chat.component';
+import { ActiveChatsComponent } from './components/active-chats/active-chats.component';
 
 
 @NgModule({
@@ -16,6 +17,7 @@ import { ChatComponent } from './components/chat/chat.component';
         MainPanelComponent,
         SidePanelComponent,
         ChatComponent,
+        ActiveChatsComponent,
     ],
     imports: [
         CommonModule,
