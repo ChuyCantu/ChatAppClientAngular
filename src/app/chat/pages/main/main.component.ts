@@ -10,6 +10,8 @@ import { AuthService } from 'src/app/auth/services/auth.service';
 })
 export class MainComponent implements OnInit {
 
+    isSidePanelOpen: boolean = true;
+
     get username(): string {
         return this.authService.username;
     }
@@ -25,9 +27,6 @@ export class MainComponent implements OnInit {
             .subscribe((resp) => this.router.navigateByUrl("/auth/login"));
     }
 
-    // Tests:
-    isSidePanelOpen: boolean = true;
-
     openMenu(): void {
         this.isSidePanelOpen = true;
     }
@@ -35,7 +34,5 @@ export class MainComponent implements OnInit {
     closeMenu(): void {
         this.isSidePanelOpen = false;
     }
-
-    
 
 }

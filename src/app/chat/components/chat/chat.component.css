@@ -1,0 +1,77 @@
+/* Custom auto resizable text area */
+.auto-resizable-input {
+    overflow-y: auto;
+    height: auto;
+
+    border-radius: 1.5rem;
+    padding-left: 1rem;
+    padding-right: 0.8rem;
+}
+
+.auto-resizable-input:empty:not(:focus)::before {
+    content: attr(data-placeholder);
+    pointer-events: none;
+    color: gray;
+}
+
+/* Send Button */
+.btn-circle {
+    border-radius: 50%;
+    width: 42px;
+    height: 42px;
+    font-size: 0.5rem;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Message Bubbles */
+.messages {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    gap: 5px;
+    overflow-y: auto;
+}
+
+.messages p {
+    margin: 0;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+.msg-sent,
+.msg-received {
+    padding: 5px 15px;
+    width: auto;
+    min-width: 5ch;
+    max-width: 80%;
+}
+
+.msg-sent {
+    align-self: flex-end;
+    background-color: #42a5f5;
+    border-radius: 1.5rem 5px 5px 1.5rem;
+    color: white;
+}
+
+.msg-received {
+    align-self: flex-start;
+    background-color: #f1f1f1;
+    border-radius: 5px 1.5rem 1.5rem 5px;
+    color: black;
+}
+
+.msg-sent:first-child,
+.msg-received + .msg-sent {
+    border-start-end-radius: 1.5rem;
+}
+
+.msg-received:first-child,
+.msg-sent + .msg-received {
+    border-start-start-radius: 1.5rem;
+}
+
+.msg-last {
+    border-end-end-radius: 1.5rem;
+    border-end-start-radius: 1.5rem;
+}

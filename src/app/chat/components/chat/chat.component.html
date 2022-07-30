@@ -1,0 +1,24 @@
+<section class="d-flex flex-column h-100" style="background-color: #c9c9c9;">
+
+    <section class="messages px-2 mt-2">
+        <section *ngFor="let msg of messages; let i = index;"
+            [ngClass]="msg.from === username ? 'msg-sent' : 'msg-received'"
+            [class.msg-last]="isLastMessageOfGroup(i)">
+            {{ msg.content }}
+        </section>
+    </section>
+
+    <section class="d-flex align-items-end gap-2 px-2 my-2">
+        <!--+ Custom resizable text area -->
+        <div #input class="form-control auto-resizable-input thin-scrollbar" 
+            contenteditable="true" data-placeholder="Say something...">
+        </div>
+
+        <button (click)="send()" type="button"
+            class="btn btn-primary d-flex btn-circle">
+            <span class="material-icons">send</span>
+        </button>
+        
+    </section>
+
+</section>
