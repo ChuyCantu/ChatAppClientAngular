@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, CanActivate, CanLoad, Route, Router, RouterStateSnapshot, UrlSegment, UrlTree } from '@angular/router';
 import { Observable, tap } from 'rxjs';
+import { ChatService } from 'src/app/chat/services/chat.service';
 import { AuthService } from '../services/auth.service';
 
 @Injectable({
@@ -9,14 +10,19 @@ import { AuthService } from '../services/auth.service';
 export class AuthGuard implements CanActivate, CanLoad {
 
     constructor(private authService: AuthService,
-                private router: Router) { }
+                private router: Router,
+                private chatService: ChatService) { }
 
     canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> {
         return this.authService.isAuthenticated()
             .pipe(
                 tap((authenticated) => {
-                    if (!authenticated)
+                    if (!authenticated) {
+                        this.chatService.disconnect();
                         this.router.navigateByUrl("/auth/login");
+                    }
+                    else
+                        this.chatService.connect();
                 })
             );
     }
@@ -24,8 +30,12 @@ export class AuthGuard implements CanActivate, CanLoad {
         return this.authService.isAuthenticated()
             .pipe(
                 tap((authenticated) => {
-                    if (!authenticated)
+                    if (!authenticated) {
+                        this.chatService.disconnect();
                         this.router.navigateByUrl("/auth/login");
+                    }
+                    else
+                        this.chatService.connect();
                 })
             );
     }

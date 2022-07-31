@@ -1,17 +1,12 @@
-import { Component, OnInit } from '@angular/core';
-import { ChatService } from '../../services/chat.service';
+import { Component } from '@angular/core';
 
 @Component({
-  selector: 'app-active-chats',
-  templateUrl: './active-chats.component.html',
-  styleUrls: ['./active-chats.component.css']
+    selector: 'app-active-chats',
+    templateUrl: './active-chats.component.html',
+    styleUrls: ['./active-chats.component.css']
 })
-export class ActiveChatsComponent implements OnInit {
+export class ActiveChatsComponent {
 
-  constructor(private chatService: ChatService) { }
-
-  ngOnInit(): void {
-      this.chatService.connect();
-  }
+    constructor() { }
 
 }

@@ -11,21 +11,19 @@ export class ChatService {
     socket!: Socket;
 
     constructor() { 
-        this.socket = io(environment.backendApiUrl, { autoConnect: false });
+        this.socket = io(environment.backendApiUrl, { autoConnect: false, withCredentials: true });
 
         this.events(this.socket);
-
-        setTimeout(() => {
-            this.disconnect();
-        }, 5000);
     }
 
     connect(): void {
-        this.socket.connect();
+        if (!this.socket.connected)
+            this.socket.connect();
     }
 
     disconnect(): void {
-        this.socket.disconnect();
+        if (this.socket.connected)
+            this.socket.disconnect();
     }
 
     events(socket: Socket): void {
