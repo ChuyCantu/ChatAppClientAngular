@@ -29,6 +29,21 @@
     padding-right: 2rem;
 }
 
+/* Desktop - Mobile */
+/** (This breakpoint are used in the chat/pages/main component too) */
+/* TODO: Move the chat/pages/main media queries here */
+@media (max-width: 575px) {
+    .hidden-on-mobile {
+        display: none;
+    }
+}
+
+@media (min-width: 576px) {
+    .hidden-on-desktop {
+        display: none;
+    }
+}
+
 /* Thin Scrollbar */
 .thin-scrollbar::-webkit-scrollbar {
     width: 5px;

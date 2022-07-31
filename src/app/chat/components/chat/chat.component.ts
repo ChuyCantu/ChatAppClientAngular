@@ -1,5 +1,6 @@
-import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
 import { AuthService } from 'src/app/auth/services/auth.service';
+import { AppOptionsService } from '../../services/app-options.service';
 
 //* TEMP
 type Message = {
@@ -12,7 +13,7 @@ type Message = {
     templateUrl: './chat.component.html',
     styleUrls: ['./chat.component.css']
 })
-export class ChatComponent implements OnInit, AfterViewInit {
+export class ChatComponent implements AfterViewInit {
 
     @ViewChild("input") inputRef!: ElementRef<HTMLInputElement>;
 
@@ -58,11 +59,12 @@ export class ChatComponent implements OnInit, AfterViewInit {
         return this.authService.username;
     }
 
-    constructor(private authService: AuthService) { }
-
-    ngOnInit(): void {
-        
+    get isSidePanelOpen(): boolean {
+        return this.appOptions.isSidePanelOpen;
     }
+
+    constructor(private authService: AuthService,
+                private appOptions: AppOptionsService) { }
 
     ngAfterViewInit(): void {
         // Set max input height based on the initial height of the element
@@ -103,6 +105,14 @@ export class ChatComponent implements OnInit, AfterViewInit {
             return this.messages[idx].from != this.messages[idx + 1].from; 
         }
         return true;
+    }
+
+    openSidePanel(): void {
+        this.appOptions.openSidePanel();
+    }
+
+    toggleSidePanelVisibility(): void {
+        this.appOptions.toggleSidePanelVisibility();
     }
 
 }

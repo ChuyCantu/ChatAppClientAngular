@@ -3,9 +3,17 @@
     <!-- Header -->
     <section class="header">
         <ul>
-            <li class="ul-btn">
+            <li (click)="openSidePanel()"
+                class="ul-btn hidden-on-desktop">
                 <span class="material-icons">arrow_back</span>
             </li>
+            <li (click)="toggleSidePanelVisibility()"
+                class="ul-btn hidden-on-mobile">
+                <span class="material-icons">
+                    {{ isSidePanelOpen ? 'arrow_back' : 'arrow_forward' }}
+                </span>
+            </li>
+
             <li class="header-user">
                 <span>Alice</span>
                 <small>Typing...</small>

@@ -1,28 +1,22 @@
-import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { Component } from '@angular/core';
 
-import { AuthService } from 'src/app/auth/services/auth.service';
+import { AppOptionsService } from '../../services/app-options.service';
 
 @Component({
     selector: 'app-main',
     templateUrl: './main.component.html',
     styleUrls: ['./main.component.css']
 })
-export class MainComponent implements OnInit {
+export class MainComponent {
 
-    isSidePanelOpen: boolean = true;
-
-    constructor() { }
-
-    ngOnInit(): void {
+    get isSidePanelOpen(): boolean {
+        return this.appOptions.isSidePanelOpen;
     }
 
-    openMenu(): void {
-        this.isSidePanelOpen = true;
-    }
+    constructor(private appOptions: AppOptionsService) { }
 
-    closeMenu(): void {
-        this.isSidePanelOpen = false;
+    toggleSidePanelVisibility(): void {
+        this.appOptions.toggleSidePanelVisibility();
     }
 
 }
