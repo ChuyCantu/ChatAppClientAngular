@@ -29,6 +29,10 @@
     padding-right: 2rem;
 }
 
+.gutter-stable {
+    scrollbar-gutter: stable;
+}
+
 /* Desktop - Mobile */
 /** (This breakpoint are used in the chat/pages/main component too) */
 /* TODO: Move the chat/pages/main media queries here */

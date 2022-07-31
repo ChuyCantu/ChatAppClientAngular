@@ -1,0 +1,102 @@
+.contact-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.contact-list li {
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+    align-items: center;
+
+    padding: 8px 10px;
+    width: 100%;
+    }
+
+.contact-list li:hover {
+    background-color: #697c88;
+}
+
+.contact {
+    width: 50%; /* some arbitrary base size to prevent overflowing */
+    flex: 1 1 auto;
+}
+
+.contact .name-container {
+    display: flex;
+    flex-direction: row;
+    align-items: baseline;
+    width: 100%;
+}
+
+.contact .name {
+    font-weight: bold;
+    color: white;
+    flex: 1 1 auto;
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.contact .date {
+    color: white;
+    font-size: 0.8rem;
+}
+
+.contact p {
+    color: #d3d3d3;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    margin: 0;
+}
+
+.contact-img {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+}
+
+/* Search bar */
+form {
+    padding: 5px 8px;
+}
+
+.search-bar {
+    width: 100%;
+    border-radius: 1.5rem;
+}
+
+/* Buttons */
+.btn-accept,
+.btn-reject {
+    cursor: pointer;
+    user-select: none;
+}
+
+.btn-accept {
+    color: #3aad3a;
+}
+
+.btn-accept:hover {
+    color: #45c445;
+}
+
+.btn-reject {
+    color: #d33e3e;
+}
+
+.btn-reject:hover {
+    color: #ce5d5d;
+}
+
+.thin-scrollbar::-webkit-scrollbar-track {
+    background: #111111;
+}
+
+/* Temp */
+.placeholder-img {
+    background-color: white;
+}

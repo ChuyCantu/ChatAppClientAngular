@@ -23,16 +23,16 @@
 
     <ng-container [ngSwitch]="activeTab">
         <app-active-chats *ngSwitchCase="0"
-            class="flex-grow-1"></app-active-chats>
+            class="h-100"></app-active-chats>
 
         <app-friends *ngSwitchCase="1"
-            class="flex-grow-1"></app-friends>
+            class="h-100"></app-friends>
 
         <app-add-friend *ngSwitchCase="2"
-            class="flex-grow-1"></app-add-friend>
+            class="h-100"></app-add-friend>
 
         <app-options *ngSwitchCase="3"
-            class="flex-grow-1"></app-options>
+            class="h-100"></app-options>
 
     </ng-container>
 
