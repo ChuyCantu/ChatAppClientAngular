@@ -9,6 +9,9 @@ import { MainPanelComponent } from './pages/main-panel/main-panel.component';
 import { SidePanelComponent } from './pages/side-panel/side-panel.component';
 import { ChatComponent } from './components/chat/chat.component';
 import { ActiveChatsComponent } from './components/active-chats/active-chats.component';
+import { FriendsComponent } from './components/friends/friends.component';
+import { AddFriendComponent } from './components/add-friend/add-friend.component';
+import { OptionsComponent } from './components/options/options.component';
 
 
 @NgModule({
@@ -18,6 +21,9 @@ import { ActiveChatsComponent } from './components/active-chats/active-chats.com
         SidePanelComponent,
         ChatComponent,
         ActiveChatsComponent,
+        FriendsComponent,
+        AddFriendComponent,
+        OptionsComponent,
     ],
     imports: [
         CommonModule,

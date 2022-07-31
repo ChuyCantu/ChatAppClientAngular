@@ -12,19 +12,9 @@ export class MainComponent implements OnInit {
 
     isSidePanelOpen: boolean = true;
 
-    get username(): string {
-        return this.authService.username;
-    }
-
-    constructor(private authService: AuthService,
-                private router: Router) { }
+    constructor() { }
 
     ngOnInit(): void {
-    }
-
-    logout(): void {
-        this.authService.logout()
-            .subscribe((resp) => this.router.navigateByUrl("/auth/login"));
     }
 
     openMenu(): void {

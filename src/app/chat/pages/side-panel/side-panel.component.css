@@ -1,0 +1,25 @@
+nav ul {
+    list-style: none;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin: 0;
+    padding: 0;
+}
+
+nav li {
+    color: white;
+    padding: 8px;
+    cursor: pointer;
+    flex: 1 1 auto;
+    text-align: center;
+    user-select: none;
+}
+
+nav li:hover {
+    background-color: #535353;
+}
+
+.active {
+    background-color: #424242;
+}

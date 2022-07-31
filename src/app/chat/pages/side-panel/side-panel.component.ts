@@ -1,15 +1,17 @@
 import { Component, OnInit } from '@angular/core';
 
 @Component({
-  selector: 'app-side-panel',
-  templateUrl: './side-panel.component.html',
-  styleUrls: ['./side-panel.component.css']
+    selector: 'app-side-panel',
+    templateUrl: './side-panel.component.html',
+    styleUrls: ['./side-panel.component.css']
 })
-export class SidePanelComponent implements OnInit {
+export class SidePanelComponent {
 
-  constructor() { }
+    activeTab: number = 0;
 
-  ngOnInit(): void {
-  }
+    constructor() { }
 
+    setActiveTab(tab: number): void {
+        this.activeTab = tab;
+    }
 }

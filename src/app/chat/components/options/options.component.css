@@ -1,0 +1,30 @@
+ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding: 0;
+}
+
+li {
+    color: white;
+    padding: 10px;
+    cursor: pointer;
+    flex: 1 1 auto;
+    user-select: none;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+li:hover {
+    background-color: #535353;
+}
+
+li {
+    border-bottom: 1px solid #777777;
+}
+
+li:first-child {
+    border-top: 1px solid #777777;
+}

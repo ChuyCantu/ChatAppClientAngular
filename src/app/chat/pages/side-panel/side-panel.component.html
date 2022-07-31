@@ -1,2 +1,39 @@
-<app-active-chats class="h-100"
-    ></app-active-chats>
+<section class="d-flex flex-column h-100 bg-gradient bg-black">
+
+    <nav>
+        <ul>
+            <li (click)="setActiveTab(0)"
+                [class.active]="activeTab === 0">
+                <span class="material-icons">question_answer</span>
+            </li>   
+            <li (click)="setActiveTab(1)"
+                [class.active]="activeTab === 1">
+                <span class="material-icons">people</span>
+            </li>
+            <li (click)="setActiveTab(2)"
+                [class.active]="activeTab === 2">
+                <span class="material-icons">person_add</span>
+            </li>
+            <li (click)="setActiveTab(3)"
+                [class.active]="activeTab === 3">
+                <span class="material-icons btn-menu">more_vert</span>
+            </li>
+        </ul>
+    </nav>
+
+    <ng-container [ngSwitch]="activeTab">
+        <app-active-chats *ngSwitchCase="0"
+            class="flex-grow-1"></app-active-chats>
+
+        <app-friends *ngSwitchCase="1"
+            class="flex-grow-1"></app-friends>
+
+        <app-add-friend *ngSwitchCase="2"
+            class="flex-grow-1"></app-add-friend>
+
+        <app-options *ngSwitchCase="3"
+            class="flex-grow-1"></app-options>
+
+    </ng-container>
+
+</section>
