@@ -1,3 +1,41 @@
+/* Header */
+.header {
+    align-items: baseline;
+    background-color: #252525;
+    color: white;
+}
+
+.header ul {
+    list-style: none;
+    display: flex;
+    margin: 0;
+    padding: 0;
+}
+
+.header-user {
+    padding: 5px 10px;
+}
+
+.header-user span {
+    font-weight: bold;
+    font-size: 1.4rem;
+}
+
+.header-user small {
+    margin-left: 8px;
+    font-size: 0.8rem;
+}
+
+.ul-btn {
+    padding: 8px 10px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.ul-btn:hover {
+    background-color: #535353;
+}
+
 /* Custom auto resizable text area */
 .auto-resizable-input-wrapper {
     width: 100%;
@@ -7,10 +45,6 @@
     overflow: hidden;
     height: auto;
     outline: 1px solid #b1b1b1;
-}
-
-.auto-resizable-input-wrapper:focus {
-    background-color: red;
 }
 
 .auto-resizable-input {

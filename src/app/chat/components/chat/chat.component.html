@@ -1,5 +1,19 @@
 <section class="d-flex flex-column h-100 bg-white">
 
+    <!-- Header -->
+    <section class="header">
+        <ul>
+            <li class="ul-btn">
+                <span class="material-icons">arrow_back</span>
+            </li>
+            <li class="header-user">
+                <span>Alice</span>
+                <small>Typing...</small>
+            </li>
+        </ul>
+    </section>
+
+    <!-- Chat -->
     <section class="messages px-2 mt-2 thin-scrollbar">
 
         <section *ngFor="let msg of messages; let i = index;"
@@ -10,6 +24,7 @@
 
     </section>
 
+    <!-- Emoji Picker -->
     <section [hidden]="!emojiPickerVisible" class="position-relative">
         <emoji-mart set="twitter" 
             [showPreview]="false" 
@@ -20,6 +35,7 @@
         </emoji-mart>
     </section>
 
+    <!-- User Input -->
     <section class="d-flex align-items-end gap-2 px-2 my-2">
         <!--+ Custom resizable text area (wrapped to hide scrollbar) -->
         <div class="auto-resizable-input-wrapper position-relative">
