@@ -2,11 +2,8 @@ import { AfterViewInit, Component, ElementRef, OnDestroy, ViewChild } from '@ang
 import { AuthService } from 'src/app/auth/services/auth.service';
 import { AppOptionsService } from '../../services/app-options.service';
 
-//* TEMP
-type Message = {
-    from: string;
-    content: string;
-}
+import { ChatService, Message } from '../../services/chat.service';
+
 
 @Component({
     selector: 'app-chat',
@@ -23,44 +20,16 @@ export class ChatComponent implements AfterViewInit, OnDestroy {
     private _emojiPickerEventListener = 
         (e: Event) => this.emojiPickerClickHandler(e);
     
-    // TODO: Change this to an object containing the msg
-    messages: Message[] = [
-        {
-            from: this.authService.username,
-            content: "Hey"
-        },
-        {
-            from: "alice",
-            content: "Hey Night"
-        },
-        {
-            from: "alice",
-            content: "How are you"
-        },
-        {
-            from: this.authService.username,
-            content: "Hi Alice!"
-        },
-        {
-            from: this.authService.username,
-            content: "Everything alright"
-        },
-        {
-            from: this.authService.username,
-            content: "What about you?"
-        },
-        {
-            from: "alice",
-            content: "That's great, and I'm fine thanks"
-        },
-        {
-            from: this.authService.username,
-            content: "I'm glad to hear that"
-        },
-    ];
+    get messages(): Message[] {
+        return this.chatService.getMessagesFrom(this.chatService.activeChatFriendRelation?.user.id!);
+    }
     
     get username(): string {
         return this.authService.username;
+    }
+
+    get userId(): number {
+        return this.authService.userId;
     }
 
     get isSidePanelOpen(): boolean {
@@ -68,7 +37,8 @@ export class ChatComponent implements AfterViewInit, OnDestroy {
     }
 
     constructor(private authService: AuthService,
-                private appOptions: AppOptionsService) { }
+                private appOptions: AppOptionsService,
+                private chatService: ChatService) { }
 
     ngAfterViewInit(): void {
         // Set max input height based on the initial height of the element
@@ -94,10 +64,11 @@ export class ChatComponent implements AfterViewInit, OnDestroy {
         
         if (input.innerText === "") return;
 
-        this.messages.push({
-            from: this.authService.username,
-            content: input.innerText
-        });
+        this.chatService.sendMessage(this.chatService.activeChatFriendRelation?.user.id!, input.innerText);
+        // this.messages.push({
+        //     from: this.authService.username,
+        //     content: input.innerText
+        // });
         input.innerText = "";
     }
 

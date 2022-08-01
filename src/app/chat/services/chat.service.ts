@@ -3,11 +3,14 @@ import { Injectable } from '@angular/core';
 import { io, Socket } from 'socket.io-client';
 import { environment } from 'src/environments/environment';
 
+import { AuthService } from 'src/app/auth/services/auth.service';
 import { FriendRelation, FriendRelationsResponse, SendFriendRequestReply } from 'src/app/chat/interfaces/chat-events';
 
 export type Message = {
-    authorId: number;
+    from: number;
+    to: number;
     content: string;
+    sentAt: Date;
 };
 
 export type FriendID = number;
@@ -23,15 +26,20 @@ export type FriendRelations = {
 })
 export class ChatService {
 
-    get friendRelations(): FriendRelations | null {
+    private socket!: Socket;
+    private _friendRelations: FriendRelations | undefined = undefined;
+    private _messages = new Map<FriendID, Message[]>();
+    private _activeChatFriend: FriendRelation | undefined = undefined;
+
+    get friendRelations(): FriendRelations | undefined {
         return this._friendRelations;
     }
 
-    private socket!: Socket;
-    private _friendRelations: FriendRelations | null = null;
-    private _messages = new Map<number, Message[]>();
+    get activeChatFriendRelation(): FriendRelation | undefined {
+        return this._activeChatFriend;
+    }
 
-    constructor() { 
+    constructor(private authService: AuthService) { 
         this.socket = io(environment.backendApiUrl, { autoConnect: false, withCredentials: true });
 
         this.events(this.socket);
@@ -63,6 +71,12 @@ export class ChatService {
             };
             for (let friend of resp.friends) {
                 this._friendRelations.friends.set(friend.user.id, friend);
+            }
+
+            // TODO: DELETE THIS
+            for (let userRelation of this._friendRelations.friends.values()) {
+                this.setActiveChat(userRelation.user.id);
+                break;
             }
         });
 
@@ -113,6 +127,14 @@ export class ChatService {
 
             // TODO: Delete chat and messages if exist
         });
+
+        socket.on("new-friend-message", (message: Message) => {
+            const friendId = message.from === this.authService.userId ? message.to : message.from;
+            if (this._messages.has(friendId))
+                this._messages.get(friendId)?.push(message);
+            else
+                this._messages.set(friendId, [ message ]);
+        });
     }
 
     sendFriendRequestTo(username: string): void {
@@ -161,5 +183,20 @@ export class ChatService {
         this._friendRelations.friends.delete(friend.user.id);
 
         // TODO: Delete chat and messages if exist
+    }
+
+    sendMessage(to: number, content: string): void {
+        this.socket.emit("send-friend-message", {
+            to,
+            content
+        });
+    }
+
+    getMessagesFrom(friendId: number): Message[] {
+        return this._messages.get(friendId) || [];
+    }
+
+    setActiveChat(friendId: number): void {
+        this._activeChatFriend = this.friendRelations?.friends.get(friendId);
     }
 }

@@ -25,7 +25,7 @@
     <section class="messages px-2 mt-2 thin-scrollbar">
 
         <section *ngFor="let msg of messages; let i = index;"
-            [ngClass]="msg.from === username ? 'msg-sent' : 'msg-received'"
+            [ngClass]="msg.from === userId ? 'msg-sent' : 'msg-received'"
             [class.msg-last]="isLastMessageOfGroup(i)">
             <p>{{ msg.content }}</p>
         </section>
