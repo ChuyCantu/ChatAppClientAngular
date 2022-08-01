@@ -27,8 +27,11 @@ export class ChatService {
     }
 
     events(socket: Socket): void {
-        socket.on("welcome", (args) => {
-            console.log(args);
-        });
+        if (!environment.production) {
+            socket.onAny((event, ...args) => {
+
+                console.log(event, args);
+            });
+        }
     }
 }
