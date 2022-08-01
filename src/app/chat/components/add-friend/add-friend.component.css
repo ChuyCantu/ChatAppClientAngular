@@ -11,8 +11,9 @@
     align-items: center;
 
     padding: 8px 10px;
+    user-select: none;
     width: 100%;
-    }
+}
 
 .contact-list li:hover {
     background-color: #697c88;
