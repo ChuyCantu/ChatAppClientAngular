@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import Swal from 'sweetalert2';
 
 import { FriendRelation } from '../../interfaces/chat-events';
 import { ChatService } from '../../services/chat.service';
@@ -16,4 +17,24 @@ export class FriendsComponent {
 
     constructor(private chatService: ChatService) { }
 
+    openDeleteFriendConfirmation(friend: FriendRelation): void {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "This will delete this user from your friends!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                this.deleteFriend(friend);
+            }
+        })
+
+    }
+
+    deleteFriend(friend: FriendRelation): void {
+        this.chatService.deleteFriend(friend);
+    }
 }
