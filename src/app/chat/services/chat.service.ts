@@ -45,20 +45,35 @@ export class ChatService {
             this._friendRelations = friendRelations;
         });
 
-        socket.on("new-friend-request", ({ from }) => {
-            console.log("New friend request from", from);
+        socket.on("new-friend-request", (friendRelation: FriendRelation) => {
+            console.log("New friend request from", friendRelation.user.username);
+            this._friendRelations?.friendRequests.push(friendRelation);
         });
 
         socket.on("friend-request-accepted", (friendRelation: FriendRelation) => {
-            console.log("New friend request from", friendRelation);
+            if (!this._friendRelations) return;
+
+            console.log(friendRelation.user.username, "accepted your friend request");
+            const pendingIdx = this._friendRelations.pendingRequests.findIndex((fr) => fr.id === friendRelation.id);
+            if (pendingIdx >= 0) this._friendRelations.pendingRequests.splice(pendingIdx, 1);
+
+            this._friendRelations.friends.push(friendRelation);
         });
 
         socket.on("friend-request-rejected", (friendRelation: FriendRelation) => {
-            console.log("New friend request from", friendRelation);
+            if (!this._friendRelations) return;
+
+            console.log(friendRelation.user.username, "rejected your friend request");
+            const pendingIdx = this._friendRelations.pendingRequests.findIndex((fr) => fr.id === friendRelation.id);
+            if (pendingIdx >= 0) this._friendRelations.pendingRequests.splice(pendingIdx, 1);
         });
 
         socket.on("friend-request-canceled", (friendRelation: FriendRelation) => {
-            console.log("New friend request from", friendRelation);
+            if (!this._friendRelations) return;
+
+            console.log(friendRelation.user.username, "rejected canceled their friend request");
+            const requestIdx = this._friendRelations.friendRequests.findIndex((fr) => fr.id === friendRelation.id);
+            if (requestIdx >= 0) this._friendRelations.friendRequests.splice(requestIdx, 1);
         });
     }
 
@@ -73,18 +88,29 @@ export class ChatService {
     acceptFriendRequest(friendRequest: FriendRelation): void {
         this.socket.emit("accept-friend-request", friendRequest);
         
-        // TODO: Delete from list
+        if (!this._friendRelations) return;
+
+        const requestIdx = this._friendRelations.friendRequests.findIndex((fr) => fr.id === friendRequest.id);
+        if (requestIdx >= 0) this._friendRelations.friendRequests.splice(requestIdx, 1);
+
+        this._friendRelations.friends.push(friendRequest);
     }
 
     rejectFriendRequest(friendRequest: FriendRelation): void {
         this.socket.emit("reject-friend-request", friendRequest);
         
-        // TODO: Delete from list
+        if (!this._friendRelations) return;
+
+        const requestIdx = this._friendRelations.friendRequests.findIndex((fr) => fr.id === friendRequest.id);
+        if (requestIdx >= 0) this._friendRelations.friendRequests.splice(requestIdx, 1);
     }
 
     cancelPendingRequest(pendingRequest: FriendRelation): void {
         this.socket.emit("cancel-pending-request", pendingRequest);
 
-        // TODO: Delete from list
+        if (!this._friendRelations) return;
+
+        const pendingIdx = this._friendRelations.pendingRequests.findIndex((fr) => fr.id === pendingRequest.id);
+        if (pendingIdx >= 0) this._friendRelations.pendingRequests.splice(pendingIdx, 1);
     }
 }

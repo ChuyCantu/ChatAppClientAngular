@@ -16,7 +16,7 @@
     </section>
     
     <section class="overflow-auto thin-scrollbar gutter-stable">
-        <div [class.mb-5]="pendingRequests.length === 0">
+        <div *ngIf="pendingRequests.length > 0">
             <h3 class="text-white-50 text-center mt-2">Pending Requests</h3>
     
             <ul class="contact-list">
@@ -55,7 +55,7 @@
             </ul>
         </div>
     
-        <div>
+        <div *ngIf="friendRequests.length > 0">
             <h3 class="text-white-50 text-center mt-2">My Friend Requests</h3>
     
             <ul class="contact-list">
