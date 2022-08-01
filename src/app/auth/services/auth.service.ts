@@ -3,10 +3,12 @@ import { Injectable } from '@angular/core';
 import { Observable, tap, switchMap, of, catchError } from 'rxjs';
 import { environment } from 'src/environments/environment';
 
+import { User } from 'src/app/chat/interfaces/chat-events';
+
 export type AuthResponse = {
     ok: boolean;
     msg: string;
-    username?: string;
+    user?: User;
 };
 
 @Injectable({
@@ -15,10 +17,18 @@ export type AuthResponse = {
 export class AuthService {
 
     apiUrl: string = environment.backendApiUrl;
-    private _username: string = "";
+    private _user: User = { id: -1, username: "" };
+
+    get user(): User {
+        return { ...this._user };
+    }
 
     get username(): string {
-        return this._username;
+        return this._user.username;
+    }
+
+    get userId(): number {
+        return this._user.id;
     }
 
     constructor(private http: HttpClient) { }
@@ -32,10 +42,10 @@ export class AuthService {
             withCredentials: true 
         }).pipe(
             tap((resp) => {
-                if (resp.ok && resp.username)
-                    this._username = resp.username;
+                if (resp.ok && resp.user)
+                    this._user = resp.user;
                 else
-                    this._username = "";
+                    this._user = { id: -1, username: "" };
             })
         );
     }
@@ -44,7 +54,7 @@ export class AuthService {
         const url = `${this.apiUrl}/api/auth/`;
         return this.http.delete<AuthResponse>(url, { withCredentials: true })
             .pipe(
-                tap((_) => this._username = "")
+                tap((_) => this._user = { id: -1, username: "" })
             );
     }
 
@@ -58,10 +68,10 @@ export class AuthService {
             withCredentials: true
         }).pipe(
             tap((resp) => {
-                if (resp.ok && resp.username)
-                    this._username = resp.username;
+                if (resp.ok && resp.user)
+                    this._user = resp.user;
                 else
-                    this._username = "";
+                    this._user = { id: -1, username: "" };
             })
         );
     }
@@ -71,14 +81,14 @@ export class AuthService {
         return this.http.get<AuthResponse>(url, { withCredentials: true })
             .pipe(
                 switchMap((resp) => {
-                    if (resp.ok && resp.username) 
-                        this._username = resp.username
+                    if (resp.ok && resp.user) 
+                        this._user = resp.user
                     else
-                        this._username = "";
+                        this._user = { id: -1, username: "" };
                     return of(resp.ok);
                 }),
                 catchError((err) => {
-                    this._username = "";
+                    this._user = { id: -1, username: "" };
                     return of(false);
                 })
             );
