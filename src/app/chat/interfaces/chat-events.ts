@@ -1,3 +1,9 @@
+export interface SendFriendRequestReply {
+    requestSent: boolean;
+    msg?: string;
+    friendRelation?: FriendRelation;
+}
+
 export interface FriendRelations {
     friends: FriendRelation[];
     pendingRequests: FriendRelation[];
