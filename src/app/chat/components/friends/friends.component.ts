@@ -1,15 +1,19 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
+
+import { FriendRelation } from '../../interfaces/chat-events';
+import { ChatService } from '../../services/chat.service';
 
 @Component({
-  selector: 'app-friends',
-  templateUrl: './friends.component.html',
-  styleUrls: ['./friends.component.css']
+    selector: 'app-friends',
+    templateUrl: './friends.component.html',
+    styleUrls: ['./friends.component.css']
 })
-export class FriendsComponent implements OnInit {
+export class FriendsComponent {
 
-  constructor() { }
+    get friends(): FriendRelation[] {
+        return this.chatService.friendRelations?.friends || [];
+    }
 
-  ngOnInit(): void {
-  }
+    constructor(private chatService: ChatService) { }
 
 }

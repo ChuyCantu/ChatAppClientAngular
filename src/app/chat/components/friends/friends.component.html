@@ -1,6 +1,17 @@
 <ul class="contact-list h-100 overflow-auto thin-scrollbar gutter-stable">
 
-    <li class="contact-active">
+    <li *ngFor="let friend of friends"
+        class="contact-active">
+        <div class="contact-img placeholder-img"></div>
+        <div class="contact">
+            <div class="name-container">
+                <span class="name">{{ friend.user.username }}</span>
+            </div>
+        </div>
+        <span class="material-icons btn-menu">more_vert</span>
+    </li>
+
+    <!-- <li>
         <div class="contact-img placeholder-img"></div>
         <div class="contact">
             <div class="name-container">
@@ -18,16 +29,6 @@
             </div>
         </div>
         <span class="material-icons btn-menu">more_vert</span>
-    </li>
-
-    <li>
-        <div class="contact-img placeholder-img"></div>
-        <div class="contact">
-            <div class="name-container">
-                <span class="name">Alice</span>
-            </div>
-        </div>
-        <span class="material-icons btn-menu">more_vert</span>
-    </li>
+    </li> -->
 
 </ul>

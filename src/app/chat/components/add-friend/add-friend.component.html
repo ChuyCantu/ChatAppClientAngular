@@ -1,26 +1,38 @@
 <section class="d-flex flex-column h-100">
-    <form>
-        <div  class="position-relative">
-            <input type="text" placeholder="Username"
+    <section>
+        <div class="position-relative">
+            <input #searchInput
+                type="text" placeholder="Username"
                 class="search-bar icon-container-right form-control">
             <span class="material-icons icon-right">search</span>
         </div>
-        <button type="button"
+        <button type="button" (click)="sendFriendRequestTo()"
             class="btn btn-success me-1 my-3 d-flex align-items-center gap-2 ms-auto">
             <span class="material-icons">
                 person_add
             </span>
             Send Friend Request
         </button>
-    </form>
+    </section>
     
     <section class="overflow-auto thin-scrollbar gutter-stable">
-        <div>
+        <div [class.mb-5]="pendingRequests.length === 0">
             <h3 class="text-white-50 text-center mt-2">Pending Requests</h3>
     
             <ul class="contact-list">
     
-                <li>
+                <li *ngFor="let pendingRequest of pendingRequests">
+                    <div class="contact-img placeholder-img"></div>
+                    <div class="contact">
+                        <div class="name-container">
+                            <span class="name">{{ pendingRequest.user.username }}</span>
+                        </div>
+                    </div>
+                    <span (click)="cancelPendingRequest(pendingRequest)"
+                        class="material-icons btn-reject">cancel</span>
+                </li>
+    
+                <!-- <li>
                     <div class="contact-img placeholder-img"></div>
                     <div class="contact">
                         <div class="name-container">
@@ -38,17 +50,7 @@
                         </div>
                     </div>
                     <span class="material-icons btn-reject">cancel</span>
-                </li>
-    
-                <li>
-                    <div class="contact-img placeholder-img"></div>
-                    <div class="contact">
-                        <div class="name-container">
-                            <span class="name">Alice</span>
-                        </div>
-                    </div>
-                    <span class="material-icons btn-reject">cancel</span>
-                </li>
+                </li> -->
     
             </ul>
         </div>
@@ -58,7 +60,20 @@
     
             <ul class="contact-list">
     
-                <li>
+                <li *ngFor="let friendRequest of friendRequests">
+                    <div class="contact-img placeholder-img"></div>
+                    <div class="contact">
+                        <div class="name-container">
+                            <span class="name">{{ friendRequest.user.username }}</span>
+                        </div>
+                    </div>
+                    <span (click)="acceptFriendRequest(friendRequest)"
+                        class="material-icons btn-accept">check_circle</span>
+                    <span (click)="rejectFriendRequest(friendRequest)"
+                        class="material-icons btn-reject">cancel</span>
+                </li>
+    
+                <!-- <li>
                     <div class="contact-img placeholder-img"></div>
                     <div class="contact">
                         <div class="name-container">
@@ -78,18 +93,7 @@
                     </div>
                     <span class="material-icons btn-accept">check_circle</span>
                     <span class="material-icons btn-reject">cancel</span>
-                </li>
-    
-                <li>
-                    <div class="contact-img placeholder-img"></div>
-                    <div class="contact">
-                        <div class="name-container">
-                            <span class="name">Alice</span>
-                        </div>
-                    </div>
-                    <span class="material-icons btn-accept">check_circle</span>
-                    <span class="material-icons btn-reject">cancel</span>
-                </li>
+                </li> -->
 
                 
             </ul>
