@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnDestroy, ViewChild } from '@angular/core';
 import { AuthService } from 'src/app/auth/services/auth.service';
 import { AppOptionsService } from '../../services/app-options.service';
 
@@ -13,11 +13,15 @@ type Message = {
     templateUrl: './chat.component.html',
     styleUrls: ['./chat.component.css']
 })
-export class ChatComponent implements AfterViewInit {
+export class ChatComponent implements AfterViewInit, OnDestroy {
 
     @ViewChild("input") inputRef!: ElementRef<HTMLInputElement>;
+    @ViewChild("emojiPicker") emojiPickerRef!: ElementRef<HTMLElement>;
 
     emojiPickerVisible: boolean = false;
+    
+    private _emojiPickerEventListener = 
+        (e: Event) => this.emojiPickerClickHandler(e);
     
     // TODO: Change this to an object containing the msg
     messages: Message[] = [
@@ -71,10 +75,18 @@ export class ChatComponent implements AfterViewInit {
         const input: HTMLInputElement = this.inputRef.nativeElement;
         input.style.maxHeight = `${input.clientHeight * 5}px`;
 
+        // Make fake input get focus when we click the container
         input.parentElement!.addEventListener("click", (e: MouseEvent) => {
             e.stopPropagation();
             input.focus();
         });
+
+        // Hide emoji picker when clicked outside
+        document.addEventListener('click', this._emojiPickerEventListener);
+    }
+
+    ngOnDestroy(): void {
+        document.removeEventListener('click', this._emojiPickerEventListener);
     }
 
     send(): void {
@@ -97,6 +109,14 @@ export class ChatComponent implements AfterViewInit {
 
     toogleEmojiPickerVisibility(): void {
         this.emojiPickerVisible = !this.emojiPickerVisible;
+    }
+
+    emojiPickerClickHandler(e: Event): void {
+        if (this.emojiPickerVisible &&
+            !this.emojiPickerRef.nativeElement
+                .contains(e.target as HTMLElement)) {
+            this.emojiPickerVisible = false
+        }
     }
 
     //+ Utility to apply grouping style to chat bubbles

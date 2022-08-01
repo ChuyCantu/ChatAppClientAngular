@@ -33,7 +33,8 @@
     </section>
 
     <!-- Emoji Picker -->
-    <section [hidden]="!emojiPickerVisible" class="position-relative">
+    <section #emojiPicker
+        [hidden]="!emojiPickerVisible" class="position-relative">
         <emoji-mart set="twitter" 
             [showPreview]="false" 
             [enableFrequentEmojiSort]="true"
