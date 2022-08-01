@@ -4,7 +4,7 @@ export interface SendFriendRequestReply {
     friendRelation?: FriendRelation;
 }
 
-export interface FriendRelations {
+export interface FriendRelationsResponse {
     friends: FriendRelation[];
     pendingRequests: FriendRelation[];
     friendRequests: FriendRelation[];

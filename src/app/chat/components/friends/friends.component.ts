@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import Swal from 'sweetalert2';
 
 import { FriendRelation } from '../../interfaces/chat-events';
-import { ChatService } from '../../services/chat.service';
+import { ChatService, FriendID } from '../../services/chat.service';
 
 @Component({
     selector: 'app-friends',
@@ -11,8 +11,9 @@ import { ChatService } from '../../services/chat.service';
 })
 export class FriendsComponent {
 
-    get friends(): FriendRelation[] {
-        return this.chatService.friendRelations?.friends || [];
+    get friends(): Map<FriendID, FriendRelation> {
+        return this.chatService.friendRelations?.friends 
+            || new Map<FriendID, FriendRelation>();
     }
 
     constructor(private chatService: ChatService) { }

@@ -3,7 +3,20 @@ import { Injectable } from '@angular/core';
 import { io, Socket } from 'socket.io-client';
 import { environment } from 'src/environments/environment';
 
-import { FriendRelation, FriendRelations, SendFriendRequestReply } from 'src/app/chat/interfaces/chat-events';
+import { FriendRelation, FriendRelationsResponse, SendFriendRequestReply } from 'src/app/chat/interfaces/chat-events';
+
+export type Message = {
+    authorId: number;
+    content: string;
+};
+
+export type FriendID = number;
+
+export type FriendRelations = {
+    friends: Map<FriendID, FriendRelation>;
+    pendingRequests: FriendRelation[];
+    friendRequests: FriendRelation[];
+}
 
 @Injectable({
     providedIn: 'root'
@@ -14,8 +27,9 @@ export class ChatService {
         return this._friendRelations;
     }
 
-    private _friendRelations: FriendRelations | null = null;
     private socket!: Socket;
+    private _friendRelations: FriendRelations | null = null;
+    private _messages = new Map<number, Message[]>();
 
     constructor() { 
         this.socket = io(environment.backendApiUrl, { autoConnect: false, withCredentials: true });
@@ -41,8 +55,15 @@ export class ChatService {
             });
         }
 
-        socket.on("friend-relations-loaded", (friendRelations: FriendRelations) => {
-            this._friendRelations = friendRelations;
+        socket.on("friend-relations-loaded", (resp: FriendRelationsResponse) => {
+            this._friendRelations = {
+                friends: new Map<FriendID, FriendRelation>(),
+                pendingRequests: resp.pendingRequests,
+                friendRequests: resp.friendRequests
+            };
+            for (let friend of resp.friends) {
+                this._friendRelations.friends.set(friend.user.id, friend);
+            }
         });
 
         socket.on("send-friend-request-reply", (reply: SendFriendRequestReply) => {
@@ -63,7 +84,8 @@ export class ChatService {
             const pendingIdx = this._friendRelations.pendingRequests.findIndex((fr) => fr.id === friendRelation.id);
             if (pendingIdx >= 0) this._friendRelations.pendingRequests.splice(pendingIdx, 1);
 
-            this._friendRelations.friends.push(friendRelation);
+            // this._friendRelations.friends.push(friendRelation);
+            this._friendRelations.friends.set(friendRelation.user.id, friendRelation);
         });
 
         socket.on("friend-request-rejected", (friendRelation: FriendRelation) => {
@@ -85,8 +107,9 @@ export class ChatService {
         socket.on("friend-deleted", (friend: FriendRelation) => {
             if (!this._friendRelations) return;
 
-            const friendIdx = this._friendRelations.friends.findIndex((fr) => fr.id === friend.id);
-            if (friendIdx >= 0) this._friendRelations.friends.splice(friendIdx, 1);
+            // const friendIdx = this._friendRelations.friends.findIndex((fr) => fr.id === friend.id);
+            // if (friendIdx >= 0) this._friendRelations.friends.splice(friendIdx, 1);
+            this._friendRelations.friends.delete(friend.user.id);
 
             // TODO: Delete chat and messages if exist
         });
@@ -106,7 +129,8 @@ export class ChatService {
         const requestIdx = this._friendRelations.friendRequests.findIndex((fr) => fr.id === friendRequest.id);
         if (requestIdx >= 0) this._friendRelations.friendRequests.splice(requestIdx, 1);
 
-        this._friendRelations.friends.push(friendRequest);
+        // this._friendRelations.friends.push(friendRequest);
+        this._friendRelations.friends.set(friendRequest.user.id, friendRequest);
     }
 
     rejectFriendRequest(friendRequest: FriendRelation): void {
@@ -132,8 +156,9 @@ export class ChatService {
 
         if (!this._friendRelations) return;
 
-        const friendIdx = this._friendRelations.friends.findIndex((fr) => fr.id === friend.id);
-        if (friendIdx >= 0) this._friendRelations.friends.splice(friendIdx, 1);
+        // const friendIdx = this._friendRelations.friends.findIndex((fr) => fr.id === friend.id);
+        // if (friendIdx >= 0) this._friendRelations.friends.splice(friendIdx, 1);
+        this._friendRelations.friends.delete(friend.user.id);
 
         // TODO: Delete chat and messages if exist
     }
