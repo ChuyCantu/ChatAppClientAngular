@@ -79,7 +79,7 @@ export class ChatComponent implements AfterViewInit, OnDestroy {
 
     }
 
-    toogleEmojiPickerVisibility(): void {
+    toggleEmojiPickerVisibility(): void {
         this.emojiPickerVisible = !this.emojiPickerVisible;
     }
 
