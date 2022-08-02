@@ -10,7 +10,7 @@
     gap: 8px;
     align-items: center;
 
-    padding: 8px 10px;
+    padding: 16px 10px;
     user-select: none;
     width: 100%;
 }
@@ -87,6 +87,7 @@ form {
 
 .btn-reject {
     color: #d33e3e;
+    margin-left: 12px;
 }
 
 .btn-reject:hover {
