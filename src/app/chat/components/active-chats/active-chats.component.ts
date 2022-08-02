@@ -41,7 +41,7 @@ export class ActiveChatsComponent {
                 from: -1,
                 to: -1,
                 content: "-- invalid message --",
-                sentAt: new Date()  
+                sentAt: new Date().toDateString()  
             };
     }
 

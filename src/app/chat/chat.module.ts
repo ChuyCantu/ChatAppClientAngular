@@ -12,6 +12,7 @@ import { ActiveChatsComponent } from './components/active-chats/active-chats.com
 import { FriendsComponent } from './components/friends/friends.component';
 import { AddFriendComponent } from './components/add-friend/add-friend.component';
 import { OptionsComponent } from './components/options/options.component';
+import { SharedModule } from '../shared/shared.module';
 
 
 @NgModule({
@@ -28,6 +29,7 @@ import { OptionsComponent } from './components/options/options.component';
     imports: [
         CommonModule,
         PickerModule,
+        SharedModule,
         ChatRoutingModule
     ]
 })
