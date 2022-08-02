@@ -7,6 +7,7 @@ import { AuthService } from 'src/app/auth/services/auth.service';
 import { FriendRelation, FriendRelationsResponse, SendFriendRequestReply } from 'src/app/chat/interfaces/chat-events';
 
 export type Message = {
+    id?: number,
     from: number;
     to: number;
     content: string;
@@ -144,6 +145,23 @@ export class ChatService {
             else
                 this._messages.set(friendId, [ message ]);
         });
+
+        socket.on("friend-messages-received", (messages: Message[]) => {
+            if (messages.length === 0) return;
+
+            let temp: Message[] = [];
+            for (let i = messages.length - 1; i >= 0; --i) {
+                const message = messages[i];
+                temp.push(message);
+            }
+
+            const firstMsg = messages[0];
+            const friendId = firstMsg.from === this.authService.userId ? firstMsg.to : firstMsg.from;
+            if (this._messages.has(friendId))
+                this._messages.set(friendId, temp.concat(this._messages.get(friendId)!))
+            else
+                this._messages.set(friendId, temp);
+        });
     }
 
     sendFriendRequestTo(username: string): void {
@@ -208,10 +226,24 @@ export class ChatService {
     }
 
     setActiveChat(friendId: number): void {
+        if (this._activeChatFriend?.user.id === friendId) return; 
+
         this._activeChatFriend = this.friendRelations?.friends.get(friendId);
+
+        this.requestLastMessages(friendId);
     }
 
     clearActiveChat(): void {
         this._activeChatFriend = undefined;
+    }
+
+    requestLastMessages(friendId: number): void {
+        if (friendId < 0 || !this.friendRelations?.friends.has(friendId)) return;
+
+        this.socket.emit("request-friend-messages", {
+            friendId: friendId,
+            offset: this._messages.get(friendId)?.length,
+            limit: 20
+        });
     }
 }
