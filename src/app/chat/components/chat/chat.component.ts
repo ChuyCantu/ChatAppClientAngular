@@ -36,6 +36,10 @@ export class ChatComponent implements AfterViewInit, OnDestroy {
         return this.appOptions.isSidePanelOpen;
     }
 
+    get friendUsername(): string {
+        return this.chatService.activeChatFriendRelation?.user.username || "";
+    }
+
     constructor(private authService: AuthService,
                 private appOptions: AppOptionsService,
                 private chatService: ChatService) { }

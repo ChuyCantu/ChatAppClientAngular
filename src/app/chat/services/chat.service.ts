@@ -76,12 +76,6 @@ export class ChatService {
             for (let friend of resp.friends) {
                 this._friendRelations.friends.set(friend.user.id, friend);
             }
-
-            // TODO: DELETE THIS
-            for (let userRelation of this._friendRelations.friends.values()) {
-                this.setActiveChat(userRelation.user.id);
-                break;
-            }
         });
 
         socket.on("last-friends-message-loaded", (messages: Message[]) => {
@@ -201,6 +195,8 @@ export class ChatService {
     }
 
     sendMessage(to: number, content: string): void {
+        if (!to || to < 0) return;
+
         this.socket.emit("send-friend-message", {
             to,
             content
@@ -213,5 +209,9 @@ export class ChatService {
 
     setActiveChat(friendId: number): void {
         this._activeChatFriend = this.friendRelations?.friends.get(friendId);
+    }
+
+    clearActiveChat(): void {
+        this._activeChatFriend = undefined;
     }
 }

@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import Swal from 'sweetalert2';
 
 import { FriendRelation } from '../../interfaces/chat-events';
+import { AppOptionsService, SidePanelTab } from '../../services/app-options.service';
 import { ChatService, FriendID } from '../../services/chat.service';
 
 @Component({
@@ -16,7 +17,8 @@ export class FriendsComponent {
             || new Map<FriendID, FriendRelation>();
     }
 
-    constructor(private chatService: ChatService) { }
+    constructor(private chatService: ChatService,
+                private appOptions: AppOptionsService) { }
 
     openDeleteFriendConfirmation(friend: FriendRelation): void {
         Swal.fire({
@@ -37,5 +39,13 @@ export class FriendsComponent {
 
     deleteFriend(friend: FriendRelation): void {
         this.chatService.deleteFriend(friend);
+    }
+
+    setActiveChat(friendId: number): void {
+        this.chatService.setActiveChat(friendId);
+        this.appOptions.setSidePanelTab(SidePanelTab.messages);
+
+        if (window.innerWidth < this.appOptions.mobileMaxSize)
+            this.appOptions.closeSidePanel();
     }
 }

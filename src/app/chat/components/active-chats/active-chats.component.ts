@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { User } from '../../interfaces/chat-events';
+import { AppOptionsService } from '../../services/app-options.service';
 
 import { ChatService, FriendID, Message } from '../../services/chat.service';
 
@@ -18,7 +19,8 @@ export class ActiveChatsComponent {
         return this.chatService.activeChatFriendRelation?.user.id || -1;
     }
 
-    constructor(private chatService: ChatService) { }
+    constructor(private chatService: ChatService,
+                private appOptions: AppOptionsService) { }
 
     getUserData(userId: number): User {
         const friends = this.chatService.friendRelations?.friends;
@@ -41,5 +43,12 @@ export class ActiveChatsComponent {
                 content: "-- invalid message --",
                 sentAt: new Date()  
             };
+    }
+
+    setActiveChat(friendId: number): void {
+        this.chatService.setActiveChat(friendId);
+        
+        if (window.innerWidth < this.appOptions.mobileMaxSize)
+            this.appOptions.closeSidePanel();
     }
 }

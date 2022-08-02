@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { AppOptionsService } from '../../services/app-options.service';
 
 @Component({
     selector: 'app-side-panel',
@@ -7,11 +8,13 @@ import { Component, OnInit } from '@angular/core';
 })
 export class SidePanelComponent {
 
-    activeTab: number = 0;
+    get activeTab():number {
+        return this.appOptions.sidePanelActiveTab;
+    }
 
-    constructor() { }
+    constructor(private appOptions: AppOptionsService) { }
 
     setActiveTab(tab: number): void {
-        this.activeTab = tab;
+        this.appOptions.setSidePanelTab(tab);
     }
 }

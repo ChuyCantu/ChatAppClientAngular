@@ -1,15 +1,19 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
+
+import { ChatService } from '../../services/chat.service';
+import { FriendRelation } from '../../interfaces/chat-events';
 
 @Component({
-  selector: 'app-main-panel',
-  templateUrl: './main-panel.component.html',
-  styleUrls: ['./main-panel.component.css']
+    selector: 'app-main-panel',
+    templateUrl: './main-panel.component.html',
+    styleUrls: ['./main-panel.component.css']
 })
-export class MainPanelComponent implements OnInit {
+export class MainPanelComponent {
 
-  constructor() { }
+    get activeChatFriendRelation(): FriendRelation | undefined {
+        return this.chatService.activeChatFriendRelation;
+    }
 
-  ngOnInit(): void {
-  }
+    constructor(private chatService: ChatService) { }
 
 }

@@ -1,7 +1,8 @@
 <ul class="contact-list h-100 overflow-auto thin-scrollbar gutter-stable">
 
     <li *ngFor="let message of messagesMap | keyvalue"
-        [class.contact-active]="activeChatUser === message.key">
+        [class.contact-active]="activeChatUser === message.key"
+        (click)="setActiveChat(message.key)">
         <div class="contact-img placeholder-img"></div>
         <div class="contact">
             <div class="name-container">
