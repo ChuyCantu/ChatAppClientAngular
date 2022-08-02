@@ -1,6 +1,6 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, tap, switchMap, of, catchError } from 'rxjs';
+import { Observable, tap, switchMap, of, catchError, Subject } from 'rxjs';
 import { environment } from 'src/environments/environment';
 
 import { User } from 'src/app/chat/interfaces/chat-events';
@@ -16,7 +16,10 @@ export type AuthResponse = {
 })
 export class AuthService {
 
-    apiUrl: string = environment.backendApiUrl;
+    onLogin: Subject<void> = new Subject<void>();
+    onLogout: Subject<void> = new Subject<void>();
+
+    private apiUrl: string = environment.backendApiUrl;
     private _user: User = { id: -1, username: "" };
 
     get user(): User {
@@ -42,8 +45,10 @@ export class AuthService {
             withCredentials: true 
         }).pipe(
             tap((resp) => {
-                if (resp.ok && resp.user)
+                if (resp.ok && resp.user) {
                     this._user = resp.user;
+                    this.onLogin.next();
+                }
                 else
                     this._user = { id: -1, username: "" };
             })
@@ -54,7 +59,10 @@ export class AuthService {
         const url = `${this.apiUrl}/api/auth/`;
         return this.http.delete<AuthResponse>(url, { withCredentials: true })
             .pipe(
-                tap((_) => this._user = { id: -1, username: "" })
+                tap((_) => {
+                    this._user = { id: -1, username: "" }
+                    this.onLogout.next();
+                })
             );
     }
 
@@ -68,8 +76,10 @@ export class AuthService {
             withCredentials: true
         }).pipe(
             tap((resp) => {
-                if (resp.ok && resp.user)
+                if (resp.ok && resp.user) {
                     this._user = resp.user;
+                    this.onLogin.next();
+                }
                 else
                     this._user = { id: -1, username: "" };
             })

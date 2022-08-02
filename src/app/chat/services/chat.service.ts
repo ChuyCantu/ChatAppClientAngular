@@ -28,7 +28,16 @@ export class ChatService {
     }
 
     constructor(private authService: AuthService,
-                private chatSocket: ChatSocketService) { }
+                private chatSocket: ChatSocketService) { 
+        authService.onLogin.subscribe(() => {
+            chatSocket.connect();
+        });
+
+        authService.onLogout.subscribe(() => {
+            this.clearAll();
+            chatSocket.disconnect();
+        });
+    }
 
     //! This should be called in the app.component so anything that depend on these events don't fail
     registerSocketEvents(socket: Socket<ServerToClientEvents, ClientToServerEvents>): void {
