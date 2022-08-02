@@ -13,11 +13,11 @@ export class AddFriendComponent {
     @ViewChild("searchInput") searchInputRef!: ElementRef<HTMLInputElement>;
 
     get pendingRequests(): FriendRelation[] {
-        return this.chatService.friendRelations?.pendingRequests || [];
+        return this.chatService.friendRelations?.pendingRequests;
     }
 
     get friendRequests(): FriendRelation[] {
-        return this.chatService.friendRelations?.friendRequests || [];
+        return this.chatService.friendRelations?.friendRequests;
     }
 
     constructor(private chatService: ChatService) { }

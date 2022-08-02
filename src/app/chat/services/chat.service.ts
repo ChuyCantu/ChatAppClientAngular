@@ -1,42 +1,25 @@
 import { Injectable } from '@angular/core';
 
-import { io, Socket } from 'socket.io-client';
-import { environment } from 'src/environments/environment';
+import { Socket } from 'socket.io-client';
 
 import { AuthService } from 'src/app/auth/services/auth.service';
-import { FriendRelation, FriendRelationsResponse, SendFriendRequestReply } from 'src/app/chat/interfaces/chat-events';
-
-export type Message = {
-    id?: number,
-    from: number;
-    to: number;
-    content: string;
-    sentAt: Date;
-};
-
-export type FriendID = number;
-
-export type FriendRelations = {
-    friends: Map<FriendID, FriendRelation>;
-    pendingRequests: FriendRelation[];
-    friendRequests: FriendRelation[];
-}
+import { FriendID, FriendRelation, FriendRelations, FriendRelationsResponse, Message, SendFriendRequestReply } from 'src/app/chat/interfaces/chat-events';
+import { ChatSocketService, ClientToServerEvents, ServerToClientEvents } from './chat-socket.service';
 
 @Injectable({
     providedIn: 'root'
 })
 export class ChatService {
 
-    private socket!: Socket;
-    private _friendRelations: FriendRelations | undefined = undefined;
+    private _friendRelations: FriendRelations = { friends: new Map<FriendID, FriendRelation>(), pendingRequests: [], friendRequests: [] };
     private _messages = new Map<FriendID, Message[]>();
-    private _activeChatFriend: FriendRelation | undefined = undefined;
+    private _activeChatFriend: FriendRelation | null = null;
 
-    get friendRelations(): FriendRelations | undefined {
+    get friendRelations(): FriendRelations {
         return this._friendRelations;
     }
 
-    get activeChatFriendRelation(): FriendRelation | undefined {
+    get activeChatFriendRelation(): FriendRelation | null {
         return this._activeChatFriend;
     }
 
@@ -44,31 +27,14 @@ export class ChatService {
         return this._messages;
     }
 
-    constructor(private authService: AuthService) { 
-        this.socket = io(environment.backendApiUrl, { autoConnect: false, withCredentials: true });
+    constructor(private authService: AuthService,
+                private chatSocket: ChatSocketService) { }
 
-        this.events(this.socket);
-    }
+    //! This should be called in the app.component so anything that depend on these events don't fail
+    registerSocketEvents(socket: Socket<ServerToClientEvents, ClientToServerEvents>): void {
+        console.log("Registering chat events...");
 
-    connect(): void {
-        if (!this.socket.connected)
-            this.socket.connect();
-    }
-
-    disconnect(): void {
-        if (this.socket.connected)
-            this.socket.disconnect();
-    }
-
-    events(socket: Socket): void {
-        if (!environment.production) {
-            socket.onAny((event, ...args) => {
-
-                console.log(event, args);
-            });
-        }
-
-        socket.on("friend-relations-loaded", (resp: FriendRelationsResponse) => {
+        socket.on("friend_relations_loaded", (resp: FriendRelationsResponse) => {
             this._friendRelations = {
                 friends: new Map<FriendID, FriendRelation>(),
                 pendingRequests: resp.pendingRequests,
@@ -79,7 +45,7 @@ export class ChatService {
             }
         });
 
-        socket.on("last-friends-message-loaded", (messages: Message[]) => {
+        socket.on("last_friends_message_loaded", (messages: Message[]) => {
             const myId: number = this.authService.userId;
             for (let message of messages) {
                 const friendId = message.from === myId ? message.to : message.from;
@@ -90,29 +56,28 @@ export class ChatService {
             }
         });
 
-        socket.on("send-friend-request-reply", (reply: SendFriendRequestReply) => {
+        socket.on("send_friend_request_reply", (reply: SendFriendRequestReply) => {
             if (reply.requestSent) {
                 this._friendRelations?.pendingRequests.push(reply.friendRelation!);
             }
         });
 
-        socket.on("new-friend-request", (friendRelation: FriendRelation) => {
+        socket.on("new_friend_request", (friendRelation: FriendRelation) => {
             console.log("New friend request from", friendRelation.user.username);
             this._friendRelations?.friendRequests.push(friendRelation);
         });
 
-        socket.on("friend-request-accepted", (friendRelation: FriendRelation) => {
+        socket.on("friend_request_accepted", (friendRelation: FriendRelation) => {
             if (!this._friendRelations) return;
 
             console.log(friendRelation.user.username, "accepted your friend request");
             const pendingIdx = this._friendRelations.pendingRequests.findIndex((fr) => fr.id === friendRelation.id);
             if (pendingIdx >= 0) this._friendRelations.pendingRequests.splice(pendingIdx, 1);
 
-            // this._friendRelations.friends.push(friendRelation);
             this._friendRelations.friends.set(friendRelation.user.id, friendRelation);
         });
 
-        socket.on("friend-request-rejected", (friendRelation: FriendRelation) => {
+        socket.on("friend_request_rejected", (friendRelation: FriendRelation) => {
             if (!this._friendRelations) return;
 
             console.log(friendRelation.user.username, "rejected your friend request");
@@ -120,7 +85,7 @@ export class ChatService {
             if (pendingIdx >= 0) this._friendRelations.pendingRequests.splice(pendingIdx, 1);
         });
 
-        socket.on("friend-request-canceled", (friendRelation: FriendRelation) => {
+        socket.on("friend_request_canceled", (friendRelation: FriendRelation) => {
             if (!this._friendRelations) return;
 
             console.log(friendRelation.user.username, "rejected canceled their friend request");
@@ -128,17 +93,19 @@ export class ChatService {
             if (requestIdx >= 0) this._friendRelations.friendRequests.splice(requestIdx, 1);
         });
 
-        socket.on("friend-deleted", (friend: FriendRelation) => {
+        socket.on("friend_deleted", (friend: FriendRelation) => {
             if (!this._friendRelations) return;
 
-            // const friendIdx = this._friendRelations.friends.findIndex((fr) => fr.id === friend.id);
-            // if (friendIdx >= 0) this._friendRelations.friends.splice(friendIdx, 1);
             this._friendRelations.friends.delete(friend.user.id);
 
-            // TODO: Delete chat and messages if exist
+            if (this._messages.has(friend.user.id))
+                this._messages.delete(friend.user.id);
+
+            if (this._activeChatFriend?.user.id === friend.user.id)
+                this._activeChatFriend = null;
         });
 
-        socket.on("new-friend-message", (message: Message) => {
+        socket.on("new_friend_message", (message: Message) => {
             const friendId = message.from === this.authService.userId ? message.to : message.from;
             if (this._messages.has(friendId))
                 this._messages.get(friendId)?.push(message);
@@ -146,7 +113,7 @@ export class ChatService {
                 this._messages.set(friendId, [ message ]);
         });
 
-        socket.on("friend-messages-received", (messages: Message[]) => {
+        socket.on("friend_messages_received", (messages: Message[]) => {
             if (messages.length === 0) return;
 
             let temp: Message[] = [];
@@ -165,25 +132,24 @@ export class ChatService {
     }
 
     sendFriendRequestTo(username: string): void {
-        this.socket.emit("send-friend-request", {
+        this.chatSocket.emit("send_friend_request", {
             to: username
         });
     }
 
     acceptFriendRequest(friendRequest: FriendRelation): void {
-        this.socket.emit("accept-friend-request", friendRequest);
+        this.chatSocket.emit("accept_friend_request", friendRequest);
         
         if (!this._friendRelations) return;
 
         const requestIdx = this._friendRelations.friendRequests.findIndex((fr) => fr.id === friendRequest.id);
         if (requestIdx >= 0) this._friendRelations.friendRequests.splice(requestIdx, 1);
 
-        // this._friendRelations.friends.push(friendRequest);
         this._friendRelations.friends.set(friendRequest.user.id, friendRequest);
     }
 
     rejectFriendRequest(friendRequest: FriendRelation): void {
-        this.socket.emit("reject-friend-request", friendRequest);
+        this.chatSocket.emit("reject_friend_request", friendRequest);
         
         if (!this._friendRelations) return;
 
@@ -192,7 +158,7 @@ export class ChatService {
     }
 
     cancelPendingRequest(pendingRequest: FriendRelation): void {
-        this.socket.emit("cancel-pending-request", pendingRequest);
+        this.chatSocket.emit("cancel_pending_request", pendingRequest);
 
         if (!this._friendRelations) return;
 
@@ -201,21 +167,23 @@ export class ChatService {
     }
 
     deleteFriend(friend: FriendRelation): void {
-        this.socket.emit("delete-friend", friend);
+        this.chatSocket.emit("delete_friend", friend);
 
         if (!this._friendRelations) return;
 
-        // const friendIdx = this._friendRelations.friends.findIndex((fr) => fr.id === friend.id);
-        // if (friendIdx >= 0) this._friendRelations.friends.splice(friendIdx, 1);
         this._friendRelations.friends.delete(friend.user.id);
 
-        // TODO: Delete chat and messages if exist
+        if (this._messages.has(friend.user.id))
+            this._messages.delete(friend.user.id);
+
+        if (this._activeChatFriend?.user.id === friend.user.id)
+            this._activeChatFriend = null;
     }
 
     sendMessage(to: number, content: string): void {
         if (!to || to < 0) return;
 
-        this.socket.emit("send-friend-message", {
+        this.chatSocket.emit("send_friend_message", {
             to,
             content
         });
@@ -228,22 +196,42 @@ export class ChatService {
     setActiveChat(friendId: number): void {
         if (this._activeChatFriend?.user.id === friendId) return; 
 
-        this._activeChatFriend = this.friendRelations?.friends.get(friendId);
+        this._activeChatFriend = this.friendRelations?.friends.get(friendId) || null;
 
         this.requestLastMessages(friendId);
     }
 
     clearActiveChat(): void {
-        this._activeChatFriend = undefined;
+        this._activeChatFriend = null;
     }
 
     requestLastMessages(friendId: number): void {
         if (friendId < 0 || !this.friendRelations?.friends.has(friendId)) return;
 
-        this.socket.emit("request-friend-messages", {
+        this.chatSocket.emit("request_friend_messages", {
             friendId: friendId,
-            offset: this._messages.get(friendId)?.length,
+            offset: this._messages.get(friendId)?.length || 0,
             limit: 20
         });
+    }
+
+    clearFriendRelations():void {
+        this._friendRelations.friends.clear();
+        this._friendRelations.pendingRequests = [];
+        this._friendRelations.friendRequests = [];
+    }
+
+    clearMessages():void {
+        this._messages.clear();
+    }
+
+    clearActiveChatFriend():void {
+        this._activeChatFriend = null;
+    }
+
+    clearAll(): void {
+        this.clearFriendRelations();
+        this.clearMessages();
+        this.clearActiveChat();
     }
 }

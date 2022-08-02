@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
-import { User } from '../../interfaces/chat-events';
+import { FriendID, Message, User } from '../../interfaces/chat-events';
 import { AppOptionsService } from '../../services/app-options.service';
 
-import { ChatService, FriendID, Message } from '../../services/chat.service';
+import { ChatService } from '../../services/chat.service';
 
 @Component({
     selector: 'app-active-chats',

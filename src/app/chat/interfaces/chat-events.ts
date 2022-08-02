@@ -19,3 +19,19 @@ export interface User {
     id: number;
     username: string;
 }
+
+export interface Message {
+    id?: number;
+    from: number;
+    to: number;
+    content: string;
+    sentAt: Date;
+};
+
+export interface FriendRelations {
+    friends: Map<FriendID, FriendRelation>;
+    pendingRequests: FriendRelation[];
+    friendRequests: FriendRelation[];
+}
+
+export type FriendID = number;

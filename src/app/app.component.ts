@@ -1,4 +1,6 @@
 import { Component } from '@angular/core';
+import { ChatSocketService } from './chat/services/chat-socket.service';
+import { ChatService } from './chat/services/chat.service';
 
 @Component({
     selector: 'app-root',
@@ -6,5 +8,10 @@ import { Component } from '@angular/core';
     styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-    title = 'ChatAppClient';
+    
+    constructor(private chatService: ChatService,
+                private chatSocket: ChatSocketService) {
+        chatService.registerSocketEvents(chatSocket.socket);
+    }
+
 }

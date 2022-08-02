@@ -1,9 +1,9 @@
 import { AfterViewInit, Component, ElementRef, OnDestroy, ViewChild } from '@angular/core';
 import { AuthService } from 'src/app/auth/services/auth.service';
+import { Message } from '../../interfaces/chat-events';
 import { AppOptionsService } from '../../services/app-options.service';
 
-import { ChatService, Message } from '../../services/chat.service';
-
+import { ChatService } from '../../services/chat.service';
 
 @Component({
     selector: 'app-chat',
@@ -69,10 +69,7 @@ export class ChatComponent implements AfterViewInit, OnDestroy {
         if (input.innerText === "") return;
 
         this.chatService.sendMessage(this.chatService.activeChatFriendRelation?.user.id!, input.innerText);
-        // this.messages.push({
-        //     from: this.authService.username,
-        //     content: input.innerText
-        // });
+
         input.innerText = "";
     }
 

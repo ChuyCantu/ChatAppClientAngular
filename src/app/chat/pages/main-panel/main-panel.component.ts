@@ -10,7 +10,7 @@ import { FriendRelation } from '../../interfaces/chat-events';
 })
 export class MainPanelComponent {
 
-    get activeChatFriendRelation(): FriendRelation | undefined {
+    get activeChatFriendRelation(): FriendRelation | null {
         return this.chatService.activeChatFriendRelation;
     }
 
