@@ -73,6 +73,7 @@ export class ChatComponent implements OnInit, AfterViewInit, OnDestroy {
         });
 
         this.activeChatChangedSubscription = this.chatService.onActiveChatChanged.subscribe(() => {
+            this.clearInput();
             // Wait for change to reflect on the DOM
             setTimeout(() => this.scrollToBottom(false), 0);
         });
@@ -112,7 +113,11 @@ export class ChatComponent implements OnInit, AfterViewInit, OnDestroy {
 
         this.chatService.sendMessage(this.chatService.activeChatFriendRelation?.user.id!, input.innerText);
 
-        input.innerText = "";
+        this.clearInput();
+    }
+
+    clearInput(): void {
+        this.inputRef.nativeElement.innerText = "";
     }
 
     emojiClick(emojiEvent: any): void {
@@ -143,6 +148,7 @@ export class ChatComponent implements OnInit, AfterViewInit, OnDestroy {
 
     openSidePanel(): void {
         this.appOptions.openSidePanel();
+        this.clearInput();
     }
 
     toggleSidePanelVisibility(): void {
