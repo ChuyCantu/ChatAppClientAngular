@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
+
 import { AuthService } from 'src/app/auth/services/auth.service';
+import { AppOptionsService, SidePanelTab } from '../../services/app-options.service';
 
 @Component({
     selector: 'app-options',
@@ -10,11 +12,15 @@ import { AuthService } from 'src/app/auth/services/auth.service';
 export class OptionsComponent {
 
     constructor(private authService: AuthService,
-                private router: Router) { }
+                private router: Router,
+                private appOptions: AppOptionsService) { }
 
 
     logout(): void {
         this.authService.logout()
-            .subscribe((resp) => this.router.navigateByUrl("/auth/login"));
+            .subscribe((resp) => {
+                this.appOptions.setSidePanelTab(SidePanelTab.messages);
+                this.router.navigateByUrl("/auth/login")
+            });
     }
 }
