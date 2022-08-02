@@ -116,7 +116,7 @@ export class ChatService {
                 this._messages.delete(friend.user.id);
 
             if (this._activeChatFriend?.user.id === friend.user.id)
-                this._activeChatFriend = null;
+                this.clearActiveChat();
         });
 
         socket.on("new_friend_message", (message: Message) => {
@@ -195,7 +195,7 @@ export class ChatService {
             this._messages.delete(friend.user.id);
 
         if (this._activeChatFriend?.user.id === friend.user.id)
-            this._activeChatFriend = null;
+            this.clearActiveChat();
     }
 
     sendMessage(to: number, content: string): void {
@@ -223,6 +223,8 @@ export class ChatService {
 
     clearActiveChat(): void {
         this._activeChatFriend = null;
+
+        this.onActiveChatChanged.next();
     }
 
     requestLastMessages(friendId: number): void {
