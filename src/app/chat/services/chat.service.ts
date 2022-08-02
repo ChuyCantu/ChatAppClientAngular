@@ -39,6 +39,10 @@ export class ChatService {
         return this._activeChatFriend;
     }
 
+    get messagesMap(): Map<FriendID, Message[]> {
+        return this._messages;
+    }
+
     constructor(private authService: AuthService) { 
         this.socket = io(environment.backendApiUrl, { autoConnect: false, withCredentials: true });
 
@@ -77,6 +81,17 @@ export class ChatService {
             for (let userRelation of this._friendRelations.friends.values()) {
                 this.setActiveChat(userRelation.user.id);
                 break;
+            }
+        });
+
+        socket.on("last-friends-message-loaded", (messages: Message[]) => {
+            const myId: number = this.authService.userId;
+            for (let message of messages) {
+                const friendId = message.from === myId ? message.to : message.from;
+                if (this._messages.has(friendId))
+                    this._messages.get(friendId)?.push(message);
+                else
+                    this._messages.set(friendId, [message]);
             }
         });
 

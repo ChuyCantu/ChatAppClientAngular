@@ -1,18 +1,19 @@
 <ul class="contact-list h-100 overflow-auto thin-scrollbar gutter-stable">
 
-    <li class="contact-active">
+    <li *ngFor="let message of messagesMap | keyvalue"
+        [class.contact-active]="activeChatUser === message.key">
         <div class="contact-img placeholder-img"></div>
         <div class="contact">
             <div class="name-container">
-                <span class="name">Alice</span>
-                <span class="date">12:45 pm</span>
+                <span class="name">{{ getUserData(message.key).username }}</span>
+                <span class="date">{{ getLastMessage(message.value).sentAt | date }}</span>
             </div>
-            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quasi, vitae.</p>
+            <p>{{ getLastMessage(message.value).content }}</p>
         </div>
         <span class="material-icons btn-menu">more_vert</span>
     </li>
 
-    <li>
+    <!-- <li class="contact-active">
         <div class="contact-img placeholder-img"></div>
         <div class="contact">
             <div class="name-container">
@@ -34,8 +35,6 @@
             <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quasi, vitae.</p>
         </div>
         <span class="material-icons btn-menu">more_vert</span>
-    </li>
-
-    
+    </li> -->
 
 </ul>
