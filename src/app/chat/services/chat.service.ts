@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { Subject } from 'rxjs';
 
 import { Socket } from 'socket.io-client';
 
@@ -10,6 +11,10 @@ import { ChatSocketService, ClientToServerEvents, ServerToClientEvents } from '.
     providedIn: 'root'
 })
 export class ChatService {
+
+    onNewMessageReceived: Subject<void> = new Subject<void>();
+    onFriendMessagesReceived: Subject<void> = new Subject<void>();
+    onActiveChatChanged: Subject<void> = new Subject<void>();
 
     private _friendRelations: FriendRelations = { friends: new Map<FriendID, FriendRelation>(), pendingRequests: [], friendRequests: [] };
     private _messages = new Map<FriendID, Message[]>();
@@ -120,6 +125,8 @@ export class ChatService {
                 this._messages.get(friendId)?.push(message);
             else
                 this._messages.set(friendId, [ message ]);
+
+            this.onNewMessageReceived.next();
         });
 
         socket.on("friend_messages_received", (messages: Message[]) => {
@@ -137,6 +144,8 @@ export class ChatService {
                 this._messages.set(friendId, temp.concat(this._messages.get(friendId)!))
             else
                 this._messages.set(friendId, temp);
+
+            this.onFriendMessagesReceived.next();
         });
     }
 
@@ -207,7 +216,9 @@ export class ChatService {
 
         this._activeChatFriend = this.friendRelations?.friends.get(friendId) || null;
 
-        this.requestLastMessages(friendId);
+        this.requestLastMessages(friendId); // TODO: Move this
+
+        this.onActiveChatChanged.next();
     }
 
     clearActiveChat(): void {

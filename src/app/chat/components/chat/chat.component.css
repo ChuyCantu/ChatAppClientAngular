@@ -128,3 +128,15 @@
     border-end-end-radius: 1.5rem;
     border-end-start-radius: 1.5rem;
 }
+
+/* Floating scroll button */
+.scroll-btn {
+    align-items: center;
+    bottom: 10px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    padding: 2px;
+    position: absolute;
+    right: 15px;
+}

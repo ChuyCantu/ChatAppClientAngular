@@ -42,13 +42,3 @@
         transform: translateX(100%);
     }
 }
-
-.temp-f {
-    display: flex;
-    gap: 10px;
-    position: fixed;
-    z-index: 10;
-    top: 50%;
-    transform: translateY(-50%);
-    left: 10px;
-}

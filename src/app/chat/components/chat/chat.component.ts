@@ -1,4 +1,5 @@
-import { AfterViewInit, Component, ElementRef, OnDestroy, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Subscription } from 'rxjs';
 import { AuthService } from 'src/app/auth/services/auth.service';
 import { Message } from '../../interfaces/chat-events';
 import { AppOptionsService } from '../../services/app-options.service';
@@ -10,15 +11,27 @@ import { ChatService } from '../../services/chat.service';
     templateUrl: './chat.component.html',
     styleUrls: ['./chat.component.css']
 })
-export class ChatComponent implements AfterViewInit, OnDestroy {
+export class ChatComponent implements OnInit, AfterViewInit, OnDestroy {
 
+    @ViewChild("chat") chatRef!: ElementRef<HTMLElement>;
     @ViewChild("input") inputRef!: ElementRef<HTMLInputElement>;
     @ViewChild("emojiPicker") emojiPickerRef!: ElementRef<HTMLElement>;
 
     emojiPickerVisible: boolean = false;
     
+    showScrollToBottomButton: boolean = false;
+
+    private newMsgScrollSubscription!: Subscription;
+    private oldMsgReceivedSubscription!: Subscription;
+    private activeChatChangedSubscription!: Subscription;
     private _emojiPickerEventListener = 
         (e: Event) => this.emojiPickerClickHandler(e);
+    private _scrollHandler = (e: Event) => {
+        const scrollOnBottom = this.isScrollOnBottom();
+        if (this.showScrollToBottomButton === scrollOnBottom) {
+            this.showScrollToBottomButton = !scrollOnBottom;
+        }
+    };
     
     get messages(): Message[] {
         return this.chatService.getMessagesFrom(this.chatService.activeChatFriendRelation?.user.id!);
@@ -44,6 +57,27 @@ export class ChatComponent implements AfterViewInit, OnDestroy {
                 private appOptions: AppOptionsService,
                 private chatService: ChatService) { }
 
+    ngOnInit(): void {
+        this.newMsgScrollSubscription = this.chatService.onNewMessageReceived.subscribe(() => {
+            if (!this.isScrollOnBottom()) return;
+
+            // Wait for change to reflect on the DOM
+            setTimeout(() => this.scrollToBottom(), 0);
+        });
+
+        this.oldMsgReceivedSubscription = this.chatService.onFriendMessagesReceived.subscribe(() => {
+            if (!this.isScrollOnBottom()) return;
+            
+            // Wait for change to reflect on the DOM
+            setTimeout(() => this.scrollToBottom(), 0);
+        });
+
+        this.activeChatChangedSubscription = this.chatService.onActiveChatChanged.subscribe(() => {
+            // Wait for change to reflect on the DOM
+            setTimeout(() => this.scrollToBottom(false), 0);
+        });
+    }
+
     ngAfterViewInit(): void {
         // Set max input height based on the initial height of the element
         const input: HTMLInputElement = this.inputRef.nativeElement;
@@ -57,10 +91,18 @@ export class ChatComponent implements AfterViewInit, OnDestroy {
 
         // Hide emoji picker when clicked outside
         document.addEventListener('click', this._emojiPickerEventListener);
+
+        // Also listen to scroll events to show/hide floating button
+        const chat = this.chatRef.nativeElement;
+        chat.addEventListener("scroll", this._scrollHandler);
     }
 
     ngOnDestroy(): void {
         document.removeEventListener('click', this._emojiPickerEventListener);
+        this.chatRef.nativeElement.removeEventListener("scroll", this._scrollHandler);
+        this.newMsgScrollSubscription.unsubscribe();
+        this.oldMsgReceivedSubscription.unsubscribe();
+        this.activeChatChangedSubscription.unsubscribe();
     }
 
     send(): void {
@@ -107,4 +149,13 @@ export class ChatComponent implements AfterViewInit, OnDestroy {
         this.appOptions.toggleSidePanelVisibility();
     }
 
+    isScrollOnBottom(): boolean {
+        const chat = this.chatRef.nativeElement;
+        return chat.scrollHeight - chat.scrollTop === chat.clientHeight;
+    }
+
+    scrollToBottom(smooth: boolean = true): void {
+        const chat = this.chatRef.nativeElement;
+        chat.scrollTo({ top: chat.scrollHeight, behavior: smooth ? "smooth" : "auto" });
+    }
 }
