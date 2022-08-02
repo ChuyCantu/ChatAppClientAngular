@@ -48,7 +48,7 @@ export class ChatService {
     registerSocketEvents(socket: Socket<ServerToClientEvents, ClientToServerEvents>): void {
         console.log("Registering chat events...");
 
-        socket.on("friend_relations_loaded", (resp: FriendRelationsResponse) => {
+        socket.on("friend_relations_loaded", async (resp: FriendRelationsResponse) => {
             this._friendRelations = {
                 friends: new Map<FriendID, FriendRelation>(),
                 pendingRequests: resp.pendingRequests,
@@ -59,7 +59,7 @@ export class ChatService {
             }
         });
 
-        socket.on("last_friends_message_loaded", (messages: Message[]) => {
+        socket.on("last_friends_message_loaded", async (messages: Message[]) => {
             const myId: number = this.authService.userId;
             for (let message of messages) {
                 const friendId = message.from === myId ? message.to : message.from;
@@ -129,7 +129,7 @@ export class ChatService {
             this.onNewMessageReceived.next();
         });
 
-        socket.on("friend_messages_received", (messages: Message[]) => {
+        socket.on("friend_messages_received", async (messages: Message[]) => {
             if (messages.length === 0) return;
 
             let temp: Message[] = [];
