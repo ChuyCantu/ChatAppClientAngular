@@ -18,15 +18,13 @@ export class ChatComponent implements OnInit, AfterViewInit, AfterViewChecked, O
     @ViewChild("emojiPicker") emojiPickerRef!: ElementRef<HTMLElement>;
     @ViewChild("topChatElement") topChatElementRef!: ElementRef<HTMLElement>;
 
-    // enableLoadingAtTop: Subject<void> = new Subject<void>();
-
     emojiPickerVisible: boolean = false;
     showScrollToBottomButton: boolean = false;
     
     private appearAtTheBottom: boolean = true;
-    // private canLoadWhenOnTop: boolean = false;
     private lastScrollHeight: number = 0;
 
+    private _intersectionObserver!: IntersectionObserver;
     private _sidePanelOpenEndSubscription!: Subscription;
     private newMsgScrollSubscription!: Subscription;
     private oldMsgReceivedSubscription!: Subscription;
@@ -85,9 +83,6 @@ export class ChatComponent implements OnInit, AfterViewInit, AfterViewChecked, O
         });
 
         this.oldMsgReceivedSubscription = this.chatService.onFriendMessagesReceived.subscribe(() => {
-            // if (this.canLoadWhenOnTop)
-            //     this.canLoadWhenOnTop = false;
-
             if (!this.isScrollAtTheBottom()) return;
             
             // Wait for change to reflect on the DOM
@@ -98,9 +93,9 @@ export class ChatComponent implements OnInit, AfterViewInit, AfterViewChecked, O
             this.clearInput();
             this.appearAtTheBottom = true;
 
-            // Translate the element to detect we scrolled to the top so it can exit and enter
-            // the intersection observable when the chat messages occupy the same amount of space of
-            // the chat element so we can load more messages if available
+            // Translate the element to detect so it can exit and enter the intersection observable
+            // when the chat messages occupy the same amount of space as the chat container so we
+            // can load more messages if available even when scrolling is not possible
             this.topChatElementRef.nativeElement.style.transform = "translateY(-5px)";
             setTimeout(() => this.topChatElementRef.nativeElement.style.transform = "translateY(0)", 100);
         }); 
@@ -109,11 +104,6 @@ export class ChatComponent implements OnInit, AfterViewInit, AfterViewChecked, O
             if (this.appOptions.isViewMobile)   
                 this.chatService.clearActiveChat();
         });
-
-        // Create subscription to enable loading old messages when reaching the top of the scroll
-        // this.enableLoadingAtTop.pipe(
-        //     debounce(() => timer(150))
-        // ).subscribe(() => this.canLoadWhenOnTop = true);
     }
 
     ngAfterViewInit(): void {
@@ -135,7 +125,7 @@ export class ChatComponent implements OnInit, AfterViewInit, AfterViewChecked, O
         chat.addEventListener("scroll", this._scrollHandler);
 
         // Set up intersection detection to the top element
-        const observer = new IntersectionObserver(
+        this._intersectionObserver = new IntersectionObserver(
             (entries: IntersectionObserverEntry[], observer: IntersectionObserver) => {
             if (!entries[0].isIntersecting || !this.activeChatFriendRelation || this.busy) return;
 
@@ -149,31 +139,11 @@ export class ChatComponent implements OnInit, AfterViewInit, AfterViewChecked, O
            rootMargin: "0px",
            threshold: 1
         });
-        observer.observe(this.topChatElementRef.nativeElement);
+        this._intersectionObserver.observe(this.topChatElementRef.nativeElement);
     }
 
     ngAfterViewChecked(): void {
         if (!this.appearAtTheBottom) {
-            // const chat = this.chatRef.nativeElement;
-            // if (this.activeChatFriendRelation && this.isScrollAtTheTop()
-            //     && chat.scrollHeight != chat.clientHeight && this.canLoadWhenOnTop && !this.busy) {
-            //     console.log(chat.scrollTop, chat.scrollHeight, chat.clientHeight);
-            //     this.lastScrollHeight = chat.scrollHeight;
-            //     setTimeout(() => {
-            //         // this.busy = true;
-            //         this.chatService.requestPastMessages(this.activeChatFriendRelation!.user.id);
-            //     }, 0);
-            //     // setTimeout(() => this.busy = false, 350);
-            // }
-            // if (!this.canLoadWhenOnTop && this.activeChatFriendRelation) {
-            //     this.enableLoadingAtTop.next();
-
-            //     if (this.lastScrollHeight != 0) {
-            //         chat.scrollTo({ top: chat.scrollHeight - this.lastScrollHeight, behavior: "auto" });
-
-            //         this.lastScrollHeight = 0;
-            //     }
-            // }
             const chat = this.chatRef.nativeElement;
             if (this.lastScrollHeight != 0 && this.lastScrollHeight != chat.scrollHeight) {
                 chat.scrollTo({ top: chat.scrollHeight - this.lastScrollHeight, behavior: "auto" });
@@ -194,6 +164,7 @@ export class ChatComponent implements OnInit, AfterViewInit, AfterViewChecked, O
         this.oldMsgReceivedSubscription.unsubscribe();
         this.activeChatChangedSubscription.unsubscribe();
         this._sidePanelOpenEndSubscription.unsubscribe();
+        this._intersectionObserver.disconnect();
     }
 
     send(): void {
