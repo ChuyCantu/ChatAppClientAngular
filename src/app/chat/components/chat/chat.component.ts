@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { AfterViewChecked, AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { AuthService } from 'src/app/auth/services/auth.service';
 import { Message } from '../../interfaces/chat-events';
@@ -11,7 +11,7 @@ import { ChatService } from '../../services/chat.service';
     templateUrl: './chat.component.html',
     styleUrls: ['./chat.component.css']
 })
-export class ChatComponent implements OnInit, AfterViewInit, OnDestroy {
+export class ChatComponent implements OnInit, AfterViewInit, AfterViewChecked, OnDestroy {
 
     @ViewChild("chat") chatRef!: ElementRef<HTMLElement>;
     @ViewChild("input") inputRef!: ElementRef<HTMLInputElement>;
@@ -20,6 +20,7 @@ export class ChatComponent implements OnInit, AfterViewInit, OnDestroy {
     emojiPickerVisible: boolean = false;
     
     showScrollToBottomButton: boolean = false;
+    appearAtTheBottom: boolean = true;
 
     private newMsgScrollSubscription!: Subscription;
     private oldMsgReceivedSubscription!: Subscription;
@@ -27,7 +28,7 @@ export class ChatComponent implements OnInit, AfterViewInit, OnDestroy {
     private _emojiPickerEventListener = 
         (e: Event) => this.emojiPickerClickHandler(e);
     private _scrollHandler = (e: Event) => {
-        const scrollOnBottom = this.isScrollOnBottom();
+        const scrollOnBottom = this.isScrollAtTheBottom();
         if (this.showScrollToBottomButton === scrollOnBottom) {
             this.showScrollToBottomButton = !scrollOnBottom;
         }
@@ -59,14 +60,14 @@ export class ChatComponent implements OnInit, AfterViewInit, OnDestroy {
 
     ngOnInit(): void {
         this.newMsgScrollSubscription = this.chatService.onNewMessageReceived.subscribe(() => {
-            if (!this.isScrollOnBottom()) return;
+            if (!this.isScrollAtTheBottom()) return;
 
             // Wait for change to reflect on the DOM
             setTimeout(() => this.scrollToBottom(), 0);
         });
 
         this.oldMsgReceivedSubscription = this.chatService.onFriendMessagesReceived.subscribe(() => {
-            if (!this.isScrollOnBottom()) return;
+            if (!this.isScrollAtTheBottom()) return;
             
             // Wait for change to reflect on the DOM
             setTimeout(() => this.scrollToBottom(), 0);
@@ -74,9 +75,8 @@ export class ChatComponent implements OnInit, AfterViewInit, OnDestroy {
 
         this.activeChatChangedSubscription = this.chatService.onActiveChatChanged.subscribe(() => {
             this.clearInput();
-            // Wait for change to reflect on the DOM
-            setTimeout(() => this.scrollToBottom(false), 0);
-        });
+            this.appearAtTheBottom = true;
+        }); 
     }
 
     ngAfterViewInit(): void {
@@ -96,6 +96,13 @@ export class ChatComponent implements OnInit, AfterViewInit, OnDestroy {
         // Also listen to scroll events to show/hide floating button
         const chat = this.chatRef.nativeElement;
         chat.addEventListener("scroll", this._scrollHandler);
+    }
+
+    ngAfterViewChecked(): void {
+        if (!this.appearAtTheBottom) return;
+
+        this.appearAtTheBottom = false;
+        this.scrollToBottom(false);
     }
 
     ngOnDestroy(): void {
@@ -155,7 +162,7 @@ export class ChatComponent implements OnInit, AfterViewInit, OnDestroy {
         this.appOptions.toggleSidePanelVisibility();
     }
 
-    isScrollOnBottom(): boolean {
+    isScrollAtTheBottom(): boolean {
         const chat = this.chatRef.nativeElement;
         return chat.scrollHeight - chat.scrollTop === chat.clientHeight;
     }
