@@ -22,6 +22,7 @@ export class ChatComponent implements OnInit, AfterViewInit, AfterViewChecked, O
     showScrollToBottomButton: boolean = false;
     appearAtTheBottom: boolean = true;
 
+    private _sidePanelOpenEndSubscription!: Subscription;
     private newMsgScrollSubscription!: Subscription;
     private oldMsgReceivedSubscription!: Subscription;
     private activeChatChangedSubscription!: Subscription;
@@ -77,6 +78,11 @@ export class ChatComponent implements OnInit, AfterViewInit, AfterViewChecked, O
             this.clearInput();
             this.appearAtTheBottom = true;
         }); 
+
+        this._sidePanelOpenEndSubscription = this.appOptions.onMainPanelCloseAnimationEnded.subscribe(() => {
+            if (this.appOptions.isViewMobile)   
+                this.chatService.clearActiveChat();
+        });
     }
 
     ngAfterViewInit(): void {
@@ -111,6 +117,7 @@ export class ChatComponent implements OnInit, AfterViewInit, AfterViewChecked, O
         this.newMsgScrollSubscription.unsubscribe();
         this.oldMsgReceivedSubscription.unsubscribe();
         this.activeChatChangedSubscription.unsubscribe();
+        this._sidePanelOpenEndSubscription.unsubscribe();
     }
 
     send(): void {
@@ -156,7 +163,6 @@ export class ChatComponent implements OnInit, AfterViewInit, AfterViewChecked, O
     openSidePanel(): void {
         this.appOptions.openSidePanel();
         this.clearInput();
-        this.chatService.clearActiveChat();
     }
 
     toggleSidePanelVisibility(): void {

@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { Subject } from 'rxjs';
 
 export enum SidePanelTab {
     messages,
@@ -11,6 +12,10 @@ export enum SidePanelTab {
     providedIn: 'root'
 })
 export class AppOptionsService {
+
+    //* Invoked from main.component
+    onMainPanelCloseAnimationEnded: Subject<void> = new Subject<void>();
+    onMainPanelOpenAnimationEnded: Subject<void> = new Subject<void>();
 
     private readonly _mobileMaxSize: number = 576; // px
     private _isSidePanelOpen: boolean = true;
