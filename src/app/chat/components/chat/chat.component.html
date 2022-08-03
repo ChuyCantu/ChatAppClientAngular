@@ -25,6 +25,10 @@
     <!-- Chat -->
     <section class="messages position-relative">
         <section #chat class="messages px-2 mt-2 thin-scrollbar">
+            <!-- Top detection -->
+            <div #topChatElement></div>
+
+            <!-- Messages -->
             <section *ngFor="let msg of messages; let i = index;"
                 [ngClass]="msg.from === userId ? 'msg-sent' : 'msg-received'"
                 [class.msg-last]="isLastMessageOfGroup(i)">
@@ -37,6 +41,12 @@
             class="btn btn-dark scroll-btn">
             <span class="material-icons">keyboard_double_arrow_down</span>
         </button>
+
+        <div *ngIf="busy" class="loading">
+            <div class="spinner-border spinner-border-sm text-light" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
     </section>
 
     <!-- Emoji Picker -->

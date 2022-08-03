@@ -11,6 +11,7 @@ interface ChatMetadata {
     firstLoadDone: boolean;
     canLoadMoreMessages: boolean;
     unreadMessages: number;
+    busyLoadingOldMessages: boolean;
 }
 
 @Injectable({
@@ -147,7 +148,7 @@ export class ChatService {
             }
             else {
                 this._chatsMetadata.set(friendId, {
-                    firstLoadDone: false, canLoadMoreMessages: true, unreadMessages: 1
+                    firstLoadDone: false, canLoadMoreMessages: true, unreadMessages: 1, busyLoadingOldMessages: false
                 });
             }
 
@@ -156,8 +157,9 @@ export class ChatService {
 
         socket.on("friend_messages_received", async (friendId: number, messages: Message[]) => {
             if (this._chatsMetadata.has(friendId)) {
-                this._chatsMetadata.get(friendId)!
-                    .canLoadMoreMessages = messages.length === this._maxMessagesPerRequest;
+                const metadata = this._chatsMetadata.get(friendId);
+                metadata!.canLoadMoreMessages = messages.length === this._maxMessagesPerRequest;
+                metadata!.busyLoadingOldMessages = false;
             }
             //* This should never happen since this events is called only on activated chats:
             // else {
@@ -264,7 +266,7 @@ export class ChatService {
         }
         else {
             this._chatsMetadata.set(friendId, { 
-                firstLoadDone: true, canLoadMoreMessages: true, unreadMessages: 0 
+                firstLoadDone: true, canLoadMoreMessages: true, unreadMessages: 0, busyLoadingOldMessages: false
             });
             this.requestPastMessages(friendId);
         }
@@ -283,6 +285,8 @@ export class ChatService {
             || (this._chatsMetadata.has(friendId) 
             && !this._chatsMetadata.get(friendId)?.canLoadMoreMessages)) 
             return;
+
+        this.chatsMetadata.get(friendId)!.busyLoadingOldMessages = true;
 
         this.chatSocket.emit("request_friend_messages", {
             friendId: friendId,

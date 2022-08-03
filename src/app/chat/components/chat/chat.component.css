@@ -140,3 +140,17 @@
     position: absolute;
     right: 15px;
 }
+
+.loading {
+    align-items: center;
+    top: 5px;
+    background-color: #353434;
+    border-radius: 50%;
+    display: flex;
+    height: 32px;
+    justify-content: center;
+    left: 50%;
+    position: absolute;
+    transform: translateX(-50%);
+    width: 32px;
+}
