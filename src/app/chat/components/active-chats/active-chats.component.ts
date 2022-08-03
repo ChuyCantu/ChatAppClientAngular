@@ -52,7 +52,7 @@ export class ActiveChatsComponent {
     setActiveChat(friendId: number): void {
         this.chatService.setActiveChat(friendId);
         
-        if (window.innerWidth < this.appOptions.mobileMaxSize)
+        if (this.appOptions.isViewMobile)
             this.appOptions.closeSidePanel();
     }
 }

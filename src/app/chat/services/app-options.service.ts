@@ -12,7 +12,7 @@ export enum SidePanelTab {
 })
 export class AppOptionsService {
 
-    private _mobileMaxSize: number = 576; // px
+    private readonly _mobileMaxSize: number = 576; // px
     private _isSidePanelOpen: boolean = true;
     private _sidePanelActiveTab: number = 0;
 
@@ -26,6 +26,10 @@ export class AppOptionsService {
 
     get sidePanelActiveTab(): number {
         return this._sidePanelActiveTab;
+    }
+
+    get isViewMobile(): boolean {
+        return window.innerWidth < this._mobileMaxSize;
     }
 
     constructor() { }

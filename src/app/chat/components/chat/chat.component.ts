@@ -156,6 +156,7 @@ export class ChatComponent implements OnInit, AfterViewInit, AfterViewChecked, O
     openSidePanel(): void {
         this.appOptions.openSidePanel();
         this.clearInput();
+        this.chatService.clearActiveChat();
     }
 
     toggleSidePanelVisibility(): void {

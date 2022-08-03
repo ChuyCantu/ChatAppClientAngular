@@ -10,8 +10,12 @@ import { FriendRelation } from '../../interfaces/chat-events';
 })
 export class MainPanelComponent {
 
-    get activeChatFriendRelation(): FriendRelation | null {
-        return this.chatService.activeChatFriendRelation;
+    get showChat(): boolean {
+        return !!this.chatService.activeChatFriendRelation
+            || this.chatService.chatsMetadata.size > 0;
+            // If metadata is > 0, at least one chat has been activated before,
+            // and we don't want to unload the chat screen because the emoji component
+            // takes some time to load.
     }
 
     constructor(private chatService: ChatService) { }
