@@ -1,7 +1,7 @@
 import { AfterViewChecked, AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { AuthService } from 'src/app/auth/services/auth.service';
-import { Message } from '../../interfaces/chat-events';
+import { FriendRelation, Message } from '../../interfaces/chat-events';
 import { AppOptionsService } from '../../services/app-options.service';
 
 import { ChatService } from '../../services/chat.service';
@@ -53,6 +53,10 @@ export class ChatComponent implements OnInit, AfterViewInit, AfterViewChecked, O
 
     get friendUsername(): string {
         return this.chatService.activeChatFriendRelation?.user.username || "";
+    }
+
+    get activeChatFriendRelation(): FriendRelation | null {
+        return this.chatService.activeChatFriendRelation;
     }
 
     constructor(private authService: AuthService,
@@ -125,7 +129,7 @@ export class ChatComponent implements OnInit, AfterViewInit, AfterViewChecked, O
         
         if (input.innerText === "") return;
 
-        this.chatService.sendMessage(this.chatService.activeChatFriendRelation?.user.id!, input.innerText);
+        this.chatService.sendMessage(this.activeChatFriendRelation?.user.id!, input.innerText);
 
         this.clearInput();
     }

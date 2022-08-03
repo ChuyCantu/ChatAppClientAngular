@@ -14,7 +14,8 @@
                 </span>
             </li>
 
-            <li class="header-user">
+            <li *ngIf="activeChatFriendRelation"
+                class="header-user">
                 <span>{{ friendUsername }}</span>
                 <small>Typing...</small>
             </li>
@@ -52,7 +53,8 @@
     </section>
 
     <!-- User Input -->
-    <section class="d-flex align-items-end gap-2 px-2 my-2">
+    <section [class.hidden]="!activeChatFriendRelation"
+        class="d-flex align-items-end gap-2 px-2 my-2">
         <!--+ Custom resizable text area (wrapped to hide scrollbar) -->
         <div class="auto-resizable-input-wrapper position-relative">
             <div #input class="bg-white auto-resizable-input thin-scrollbar"
