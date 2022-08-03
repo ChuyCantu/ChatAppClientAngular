@@ -114,12 +114,12 @@
     color: black;
 }
 
-.msg-sent:first-child,
+.msg-sent:first-of-type,
 .msg-received + .msg-sent {
     border-start-end-radius: 1.5rem;
 }
 
-.msg-received:first-child,
+.msg-received:first-of-type,
 .msg-sent + .msg-received {
     border-start-start-radius: 1.5rem;
 }
