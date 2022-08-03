@@ -17,7 +17,7 @@ export interface ServerToClientEvents {
     friend_request_canceled: (friendRelation: FriendRelation) => void;
     friend_deleted: (friend: FriendRelation) => void;
     new_friend_message: (message: Message) => void;
-    friend_messages_received: (messages: Message[]) => void;
+    friend_messages_received: (friendId: number, messages: Message[]) => void;
 }
 
 export interface ClientToServerEvents {
