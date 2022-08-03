@@ -7,6 +7,12 @@ import { AuthService } from 'src/app/auth/services/auth.service';
 import { FriendID, FriendRelation, FriendRelations, FriendRelationsResponse, Message, SendFriendRequestReply } from 'src/app/chat/interfaces/chat-events';
 import { ChatSocketService, ClientToServerEvents, ServerToClientEvents } from './chat-socket.service';
 
+interface ChatMetadata {
+    firstLoadDone: boolean;
+    canLoadMoreMessages: boolean;
+    unreadMessages: number;
+}
+
 @Injectable({
     providedIn: 'root'
 })
@@ -18,7 +24,10 @@ export class ChatService {
 
     private _friendRelations: FriendRelations = { friends: new Map<FriendID, FriendRelation>(), pendingRequests: [], friendRequests: [] };
     private _messages = new Map<FriendID, Message[]>();
+    private _chatsMetadata = new Map<FriendID, ChatMetadata>();
     private _activeChatFriend: FriendRelation | null = null;
+    
+    private readonly _maxMessagesPerRequest: number = 20;
 
     get friendRelations(): FriendRelations {
         return this._friendRelations;
@@ -30,6 +39,10 @@ export class ChatService {
 
     get messagesMap(): Map<FriendID, Message[]> {
         return this._messages;
+    }
+
+    get chatsMetadata(): Map<FriendID, ChatMetadata> {
+        return this._chatsMetadata;
     }
 
     constructor(private authService: AuthService,
@@ -126,10 +139,33 @@ export class ChatService {
             else
                 this._messages.set(friendId, [ message ]);
 
+            if (this._chatsMetadata.has(friendId)) {
+                if (this.activeChatFriendRelation?.user.id === friendId)
+                    this._chatsMetadata.get(friendId)!.unreadMessages = 0;
+                else
+                    this._chatsMetadata.get(friendId)!.unreadMessages += 1;
+            }
+            else {
+                this._chatsMetadata.set(friendId, {
+                    firstLoadDone: false, canLoadMoreMessages: true, unreadMessages: 1
+                });
+            }
+
             this.onNewMessageReceived.next();
         });
 
-        socket.on("friend_messages_received", async (messages: Message[]) => {
+        socket.on("friend_messages_received", async (friendId: number, messages: Message[]) => {
+            if (this._chatsMetadata.has(friendId)) {
+                this._chatsMetadata.get(friendId)!
+                    .canLoadMoreMessages = messages.length === this._maxMessagesPerRequest;
+            }
+            //* This should never happen since this events is called only on activated chats:
+            // else {
+            //     this._chatsMetadata.set(friendId, {
+            //         firstLoadDone: false, canLoadMoreMessages: true, unreadMessages: 1
+            //     });
+            // }
+
             if (messages.length === 0) return;
 
             let temp: Message[] = [];
@@ -138,8 +174,8 @@ export class ChatService {
                 temp.push(message);
             }
 
-            const firstMsg = messages[0];
-            const friendId = firstMsg.from === this.authService.userId ? firstMsg.to : firstMsg.from;
+            // const firstMsg = messages[0];
+            // const friendId = firstMsg.from === this.authService.userId ? firstMsg.to : firstMsg.from;
             if (this._messages.has(friendId))
                 this._messages.set(friendId, temp.concat(this._messages.get(friendId)!))
             else
@@ -216,7 +252,21 @@ export class ChatService {
 
         this._activeChatFriend = this.friendRelations?.friends.get(friendId) || null;
 
-        this.requestLastMessages(friendId); // TODO: Move this
+        if (this._chatsMetadata.has(friendId)) {
+            const metadata = this._chatsMetadata.get(friendId);
+            metadata!.unreadMessages = 0;
+
+            if (!metadata!.firstLoadDone) {
+                metadata!.firstLoadDone = true;
+                this.requestPastMessages(friendId);    
+            }
+        }
+        else {
+            this._chatsMetadata.set(friendId, { 
+                firstLoadDone: true, canLoadMoreMessages: true, unreadMessages: 0 
+            });
+            this.requestPastMessages(friendId);
+        }
 
         this.onActiveChatChanged.next();
     }
@@ -227,13 +277,16 @@ export class ChatService {
         this.onActiveChatChanged.next();
     }
 
-    requestLastMessages(friendId: number): void {
-        if (friendId < 0 || !this.friendRelations?.friends.has(friendId)) return;
+    requestPastMessages(friendId: number): void {
+        if (friendId < 0 || !this.friendRelations?.friends.has(friendId)
+            || (this._chatsMetadata.has(friendId) 
+            && !this._chatsMetadata.get(friendId)?.canLoadMoreMessages)) 
+            return;
 
         this.chatSocket.emit("request_friend_messages", {
             friendId: friendId,
             offset: this._messages.get(friendId)?.length || 0,
-            limit: 20
+            limit: this._maxMessagesPerRequest
         });
     }
 
