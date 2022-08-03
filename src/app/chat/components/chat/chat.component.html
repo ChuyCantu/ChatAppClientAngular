@@ -17,7 +17,10 @@
             <li *ngIf="activeChatFriendRelation"
                 class="header-user">
                 <span>{{ friendUsername }}</span>
-                <small>Typing...</small>
+
+                <small *ngIf="isFriendTyping">
+                    Typing...
+                </small>
             </li>
         </ul>
     </section>
@@ -76,7 +79,8 @@
         <!--+ Custom resizable text area (wrapped to hide scrollbar) -->
         <div class="auto-resizable-input-wrapper position-relative">
             <div #input class="bg-white auto-resizable-input thin-scrollbar"
-                contenteditable="true" data-placeholder="Say something...">
+                contenteditable="true" data-placeholder="Say something..."
+                (input)="typing()">
             </div>
 
             <span (click)="toggleEmojiPickerVisibility()"

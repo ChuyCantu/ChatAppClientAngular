@@ -18,6 +18,7 @@ export interface ServerToClientEvents {
     friend_deleted: (friend: FriendRelation) => void;
     new_friend_message: (message: Message) => void;
     friend_messages_received: (friendId: number, messages: Message[]) => void;
+    friend_typing: (friendId: number, typing: boolean) => void;
 }
 
 export interface ClientToServerEvents {
@@ -28,6 +29,7 @@ export interface ClientToServerEvents {
     delete_friend: (friend: FriendRelation) => void;
     send_friend_message: (data: { to: number, content: string }) => void;
     request_friend_messages: (data: { friendId: number, offset: number, limit: number }) => void;
+    notify_typing: (to: number, typing: boolean) => void;
 }
 
 @Injectable({

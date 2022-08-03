@@ -1,5 +1,5 @@
 import { AfterViewChecked, AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { debounce, Subject, Subscription, timer } from 'rxjs';
+import { debounceTime, Subject, Subscription } from 'rxjs';
 import { AuthService } from 'src/app/auth/services/auth.service';
 import { FriendRelation, Message } from '../../interfaces/chat-events';
 import { AppOptionsService } from '../../services/app-options.service';
@@ -17,6 +17,9 @@ export class ChatComponent implements OnInit, AfterViewInit, AfterViewChecked, O
     @ViewChild("input") inputRef!: ElementRef<HTMLInputElement>;
     @ViewChild("emojiPicker") emojiPickerRef!: ElementRef<HTMLElement>;
     @ViewChild("topChatElement") topChatElementRef!: ElementRef<HTMLElement>;
+
+    typingDebouncer: Subject<string> = new Subject<string>();
+    private _typing: boolean = false;
 
     emojiPickerVisible: boolean = false;
     showScrollToBottomButton: boolean = false;
@@ -71,6 +74,10 @@ export class ChatComponent implements OnInit, AfterViewInit, AfterViewChecked, O
             .get(this.activeChatFriendRelation.user.id)!.busyLoadingOldMessages;
     }
 
+    get isFriendTyping(): boolean {
+        return this.chatService.chatsMetadata.get(this.activeChatFriendRelation!.user.id)!.typing;
+    }
+
     constructor(private authService: AuthService,
                 private appOptions: AppOptionsService,
                 private chatService: ChatService) { }
@@ -104,6 +111,14 @@ export class ChatComponent implements OnInit, AfterViewInit, AfterViewChecked, O
         this._sidePanelOpenEndSubscription = this.appOptions.onMainPanelCloseAnimationEnded.subscribe(() => {
             if (this.appOptions.isViewMobile)   
                 this.chatService.clearActiveChat();
+        });
+
+        // Configure typing debouncer event
+        this.typingDebouncer.pipe(
+            debounceTime(500)
+        ).subscribe(_ => {
+            this._typing = false;
+            this.chatService.notifyTyping(this.activeChatFriendRelation?.user.id!, false);
         });
     }
 
@@ -180,6 +195,15 @@ export class ChatComponent implements OnInit, AfterViewInit, AfterViewChecked, O
 
     clearInput(): void {
         this.inputRef.nativeElement.innerText = "";
+    }
+
+    typing(): void {
+        this.typingDebouncer.next(this.inputRef.nativeElement.innerText);
+
+        if (!this._typing) {
+            this._typing = true;
+            this.chatService.notifyTyping(this.activeChatFriendRelation?.user.id!, true);
+        }
     }
 
     emojiClick(emojiEvent: any): void {

@@ -9,7 +9,10 @@
                 <span class="name">{{ getUserData(message.key).username }}</span>
                 <span class="date">{{ getLastMessage(message.value).sentAt | dateSmall }}</span>
             </div>
-            <p>{{ getLastMessage(message.value).content }}</p>
+            <p *ngIf="!isFriendTyping(message.key); else typingLabel">{{ getLastMessage(message.value).content }}</p>
+            <ng-template #typingLabel>
+                <p class="typing-label">Typing...</p>
+            </ng-template>
         </div>
         <span class="material-icons btn-menu">more_vert</span>
 

@@ -66,6 +66,10 @@
     border-radius: 50%;
 }
 
+.contact .typing-label {
+    color: #5f97cc;
+}
+
 /* Menu button */
 .btn-menu {
     color: #d4d4d4;

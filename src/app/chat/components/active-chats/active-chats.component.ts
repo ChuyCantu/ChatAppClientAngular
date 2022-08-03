@@ -55,4 +55,8 @@ export class ActiveChatsComponent {
         if (this.appOptions.isViewMobile)
             this.appOptions.closeSidePanel();
     }
+
+    isFriendTyping(friendId: number): boolean {
+        return this.chatService.chatsMetadata.get(friendId)?.typing || false;
+    }
 }

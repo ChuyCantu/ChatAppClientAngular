@@ -12,6 +12,7 @@ interface ChatMetadata {
     canLoadMoreMessages: boolean;
     unreadMessages: number;
     busyLoadingOldMessages: boolean;
+    typing: boolean;
 }
 
 @Injectable({
@@ -148,7 +149,11 @@ export class ChatService {
             }
             else {
                 this._chatsMetadata.set(friendId, {
-                    firstLoadDone: false, canLoadMoreMessages: true, unreadMessages: 1, busyLoadingOldMessages: false
+                    firstLoadDone: false, 
+                    canLoadMoreMessages: true, 
+                    unreadMessages: 1, 
+                    busyLoadingOldMessages: false,
+                    typing: false
                 });
             }
 
@@ -185,6 +190,22 @@ export class ChatService {
                 this._messages.set(friendId, temp);
 
             this.onFriendMessagesReceived.next();
+        });
+
+        socket.on("friend_typing", (friendId: number, typing: boolean) => {
+            if (this._chatsMetadata.has(friendId)) {
+                const metadata = this._chatsMetadata.get(friendId);
+                metadata!.typing = typing;
+            }
+            else {
+                this._chatsMetadata.set(friendId, {
+                    firstLoadDone: false,
+                    canLoadMoreMessages: true,
+                    unreadMessages: 0,
+                    busyLoadingOldMessages: false,
+                    typing: typing
+                });
+            }
         });
     }
 
@@ -246,6 +267,10 @@ export class ChatService {
         });
     }
 
+    notifyTyping(to: number, typing: boolean): void {
+        this.chatSocket.emit("notify_typing", to, typing);
+    }
+
     getMessagesFrom(friendId: number): Message[] {
         return this._messages.get(friendId) || [];
     }
@@ -266,7 +291,11 @@ export class ChatService {
         }
         else {
             this._chatsMetadata.set(friendId, { 
-                firstLoadDone: true, canLoadMoreMessages: true, unreadMessages: 0, busyLoadingOldMessages: false
+                firstLoadDone: true, 
+                canLoadMoreMessages: true, 
+                unreadMessages: 0, 
+                busyLoadingOldMessages: false,
+                typing: false
             });
             this.requestPastMessages(friendId);
         }
