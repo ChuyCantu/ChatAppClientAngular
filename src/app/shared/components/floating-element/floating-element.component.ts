@@ -20,12 +20,12 @@ export class FloatingElementComponent implements AfterViewInit {
         this.arrowElemRef.nativeElement.style.backgroundColor = this.arrowColor;
     }
 
-    showFloatingElement(referenceElement: HTMLElement): void {
+    show(referenceElement: HTMLElement): void {
         this.containerRef.nativeElement.style.display = "block";
         this.updateElementPosition(referenceElement);
     }
 
-    hideTooltip(): void {
+    hide(): void {
         this.containerRef.nativeElement.style.display = "";
     }
 
