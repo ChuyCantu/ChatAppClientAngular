@@ -12,6 +12,12 @@
             <p>{{ getLastMessage(message.value).content }}</p>
         </div>
         <span class="material-icons btn-menu">more_vert</span>
+
+        <span *ngIf="getUnreadMessages(message.key)"
+            class="badge rounded-pill bg-danger">
+            {{ getUnreadMessages(message.key) > 99 ? "99+" : getUnreadMessages(message.key) }}
+            <span class="visually-hidden">unread messages</span>
+        </span>
     </li>
 
 </ul>

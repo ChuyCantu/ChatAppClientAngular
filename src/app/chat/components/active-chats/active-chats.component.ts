@@ -45,6 +45,10 @@ export class ActiveChatsComponent {
             };
     }
 
+    getUnreadMessages(friendId: number): number {
+        return this.chatService.chatsMetadata.get(friendId)?.unreadMessages || 0;
+    }
+
     setActiveChat(friendId: number): void {
         this.chatService.setActiveChat(friendId);
         

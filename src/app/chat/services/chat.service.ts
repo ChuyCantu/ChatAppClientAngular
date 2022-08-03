@@ -168,6 +168,7 @@ export class ChatService {
 
             if (messages.length === 0) return;
 
+            // TODO: When read status is added in the backend, count unread messages and add the to the metadata
             let temp: Message[] = [];
             for (let i = messages.length - 1; i >= 0; --i) {
                 const message = messages[i];

@@ -3,17 +3,32 @@
     <nav>
         <ul>
             <li (click)="setActiveTab(0)"
-                [class.active]="activeTab === 0">
+                [class.active]="activeTab === 0" class="position-relative">
                 <span class="material-icons">question_answer</span>
+
+                <span *ngIf="unreadMessagesCount > 0"
+                    class="badge rounded-pill bg-danger">
+                    {{ unreadMessagesCount > 99 ? "99+" : unreadMessagesCount }}
+                    <span class="visually-hidden">unread messages</span>
+                </span>
             </li>   
+
             <li (click)="setActiveTab(1)"
                 [class.active]="activeTab === 1">
                 <span class="material-icons">people</span>
             </li>
+
             <li (click)="setActiveTab(2)"
-                [class.active]="activeTab === 2">
+                [class.active]="activeTab === 2" class="position-relative">
                 <span class="material-icons">person_add</span>
+                
+                <span *ngIf="friendRequestsCount > 0"
+                    class="badge rounded-pill bg-danger">
+                    {{ friendRequestsCount > 99 ? "99+" : friendRequestsCount }}
+                    <span class="visually-hidden">friend requests</span>
+                </span>
             </li>
+
             <li (click)="setActiveTab(3)"
                 [class.active]="activeTab === 3">
                 <span class="material-icons btn-menu">more_vert</span>
