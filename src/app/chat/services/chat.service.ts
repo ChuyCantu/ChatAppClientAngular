@@ -301,10 +301,6 @@ export class ChatService {
         this._messages.clear();
     }
 
-    clearActiveChatFriend():void {
-        this._activeChatFriend = null;
-    }
-
     clearAll(): void {
         this.clearFriendRelations();
         this.clearMessages();
