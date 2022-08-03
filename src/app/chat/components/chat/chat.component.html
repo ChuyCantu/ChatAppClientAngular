@@ -32,7 +32,9 @@
             <section *ngFor="let msg of messages; let i = index;"
                 [ngClass]="msg.from === userId ? 'msg-sent' : 'msg-received'"
                 [class.msg-last]="isLastMessageOfGroup(i)">
-                <p>{{ msg.content }}</p>
+                <p>{{ msg.content }}
+                    <small class="timestamp">{{ msg.sentAt | date: "shortTime" }}</small>
+                </p>
             </section>
         </section>
 

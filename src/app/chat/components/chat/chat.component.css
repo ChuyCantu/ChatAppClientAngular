@@ -129,6 +129,23 @@
     border-end-start-radius: 1.5rem;
 }
 
+.msg-sent .timestamp,
+.msg-received .timestamp {
+    font-size: 0.7rem;
+}
+
+.msg-sent .timestamp {
+    color: #dbdbdb;
+}
+    /* text-align: end;
+    width: 100%;
+    display: inline-block;
+} */
+
+.msg-received .timestamp {
+    color: gray;
+}
+
 /* Floating scroll button */
 .scroll-btn {
     align-items: center;
