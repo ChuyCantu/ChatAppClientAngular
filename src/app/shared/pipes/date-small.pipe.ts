@@ -6,7 +6,7 @@ import { Pipe, PipeTransform } from '@angular/core';
 })
 export class DateSmallPipe implements PipeTransform {
 
-    transform(value: string): string {
+    transform(value: string, showTodayAsTime: boolean = true): string {
         const date = new Date(value);
         const midnight = new Date();
         midnight.setHours(0, 0, 0, 0);
@@ -18,7 +18,7 @@ export class DateSmallPipe implements PipeTransform {
         if (date < midnight) 
             return "yesterday";
         else
-            return formatDate(date, "shortTime", "en-US");
+            return showTodayAsTime ? formatDate(date, "shortTime", "en-US") : "today";
     }
 
 }

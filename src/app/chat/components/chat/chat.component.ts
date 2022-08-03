@@ -23,6 +23,7 @@ export class ChatComponent implements OnInit, AfterViewInit, AfterViewChecked, O
     
     private appearAtTheBottom: boolean = true;
     private lastScrollHeight: number = 0;
+    private prevInsertedDate: string = ""; // Used for the chat UI only
 
     private _intersectionObserver!: IntersectionObserver;
     private _sidePanelOpenEndSubscription!: Subscription;
@@ -205,6 +206,15 @@ export class ChatComponent implements OnInit, AfterViewInit, AfterViewChecked, O
             return this.messages[idx].from != this.messages[idx + 1].from; 
         }
         return true;
+    }
+
+    shouldInsertDateHeader(formatedDate: string, index: number): boolean {
+        if (index === 0 || formatedDate !== this.prevInsertedDate) {
+            this.prevInsertedDate = formatedDate;
+            return true;
+        }
+        
+        return false;
     }
 
     openSidePanel(): void {

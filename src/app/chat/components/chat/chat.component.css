@@ -146,6 +146,22 @@
     color: gray;
 }
 
+.date-tag {
+    text-align: center;
+}
+
+.date-tag span {
+    background-color: #383838;
+    color: #e0e0e0;
+    padding: 5px 8px;
+    border-radius: 8px;
+}
+
+/* Fix sent messages radius that come after a date-tag */
+.date-tag + .msg-sent {
+    border-start-end-radius: 1.5rem;
+}
+
 /* Floating scroll button */
 .scroll-btn {
     align-items: center;

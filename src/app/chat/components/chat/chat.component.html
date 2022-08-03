@@ -29,13 +29,19 @@
             <div #topChatElement></div>
 
             <!-- Messages -->
-            <section *ngFor="let msg of messages; let i = index;"
-                [ngClass]="msg.from === userId ? 'msg-sent' : 'msg-received'"
-                [class.msg-last]="isLastMessageOfGroup(i)">
-                <p>{{ msg.content }}
-                    <small class="timestamp">{{ msg.sentAt | date: "shortTime" }}</small>
-                </p>
-            </section>
+            <ng-container *ngFor="let msg of messages; let i = index;">
+                <ng-container *ngIf="shouldInsertDateHeader(msg.sentAt | dateSmall: false, i)">
+                    <div class="date-tag"><span>{{ msg.sentAt | dateSmall: false }}</span></div>
+                </ng-container>
+
+                <section 
+                    [ngClass]="msg.from === userId ? 'msg-sent' : 'msg-received'"
+                    [class.msg-last]="isLastMessageOfGroup(i)">
+                    <p>{{ msg.content }}
+                        <small class="timestamp">{{ msg.sentAt | date: "shortTime" }}</small>
+                    </p>
+                </section>
+            </ng-container>
         </section>
 
         <button *ngIf="showScrollToBottomButton"
