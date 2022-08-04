@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Subject } from 'rxjs';
+import { from, max, Subject } from 'rxjs';
 
 import { Socket } from 'socket.io-client';
 
@@ -155,6 +155,16 @@ export class ChatService {
 
         socket.on("new_friend_message", (message: Message) => {
             const friendId = message.from === this.authService.userId ? message.to : message.from;
+            
+            if (this.activeChatFriendRelation?.user.id === friendId
+                && message.from != this.authService.userId) {
+                const now = new Date();
+                console.log(1, now);
+                
+                message.readAt = now.toISOString();
+                this.notifyMessageRead(friendId, message.id!, now); 
+            }
+
             if (this._messages.has(friendId))
                 this._messages.get(friendId)?.push(message);
             else
@@ -170,7 +180,7 @@ export class ChatService {
                 this._chatsMetadata.set(friendId, {
                     firstLoadDone: false, 
                     canLoadMoreMessages: true, 
-                    unreadMessages: 1, 
+                    unreadMessages: this.activeChatFriendRelation?.user.id === friendId ? 1 : 0, 
                     busyLoadingOldMessages: false,
                     typing: false
                 });
@@ -194,10 +204,15 @@ export class ChatService {
 
             if (messages.length === 0) return;
 
-            // TODO: When read status is added in the backend, count unread messages and add the to the metadata
             let temp: Message[] = [];
             for (let i = messages.length - 1; i >= 0; --i) {
                 const message = messages[i];
+
+                if (message.sentAt === null) {
+                    const now = new Date().toISOString();
+                    message.readAt = now;
+                }
+
                 temp.push(message);
             }
 
@@ -222,6 +237,26 @@ export class ChatService {
                     busyLoadingOldMessages: false,
                     typing: typing
                 });
+            }
+        });
+
+        //! This event is not really necessary unless we want to show the user if their friend has read the messages without reloading them
+        socket.on("messages_read", (friendId: number, lastMsgReadId: number, timestamp: string) => {
+            if (this._messages.has(friendId)) {
+                const messages = this._messages.get(friendId);
+                if (!messages) return;
+
+                for (let i = messages.length - 1; i >= 0; --i) {
+                    const msg = messages[i];
+
+                    if (msg.from === this.authService.userId) {
+                        if (msg.readAt != null) break;
+
+                        if (msg.id! <= lastMsgReadId) {
+                            msg.readAt = timestamp;
+                        }
+                    }
+                }
             }
         });
     }
@@ -301,7 +336,6 @@ export class ChatService {
 
         if (this._chatsMetadata.has(friendId)) {
             const metadata = this._chatsMetadata.get(friendId);
-            metadata!.unreadMessages = 0;
 
             if (!metadata!.firstLoadDone) {
                 metadata!.firstLoadDone = true;
@@ -317,6 +351,27 @@ export class ChatService {
                 typing: false
             });
             this.requestPastMessages(friendId);
+        }
+
+        // Mark messages as read      
+        if (this._chatsMetadata.get(friendId)!.unreadMessages > 0 && this._messages.has(friendId)) {
+            const now = new Date();
+            const nowStr = now.toISOString();
+
+            const friendMessages = this._messages.get(friendId);
+            if (friendMessages) {
+                for (let i = friendMessages.length - 1; i >= 0; --i) {
+                    const msg = friendMessages[i];
+                    
+                    if (msg.from === friendId) {
+                        if (msg.readAt !== null) break;
+
+                        msg.readAt = nowStr;
+                    }
+                }
+                this.notifyMessagesRead(friendId, friendMessages[friendMessages.length - 1].id!, now);
+                this._chatsMetadata.get(friendId)!.unreadMessages = 0;
+            }
         }
 
         this.onActiveChatChanged.next();
@@ -341,6 +396,14 @@ export class ChatService {
             offset: this._messages.get(friendId)?.length || 0,
             limit: this._maxMessagesPerRequest
         });
+    }
+
+    notifyMessageRead(friendId: number, msgReadId: number, timestamp: Date): void {
+        this.chatSocket.emit("notify_message_read", friendId, msgReadId, timestamp);
+    }
+
+    notifyMessagesRead(friendId: number, lastMsgReadId: number, timestamp: Date): void {
+        this.chatSocket.emit("notify_messages_read", friendId, lastMsgReadId, timestamp);
     }
 
     clearFriendRelations(): void {

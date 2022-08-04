@@ -19,6 +19,8 @@ export interface ServerToClientEvents {
     new_friend_message: (message: Message) => void;
     friend_messages_received: (friendId: number, messages: Message[]) => void;
     friend_typing: (friendId: number, typing: boolean) => void;
+    message_read: (friendId: number, msgReadId: number, timestamp: string) => void;
+    messages_read: (friendId: number, lastMsgReadId: number, timestamp: string) => void;
 }
 
 export interface ClientToServerEvents {
@@ -30,6 +32,8 @@ export interface ClientToServerEvents {
     send_friend_message: (data: { to: number, content: string }) => void;
     request_friend_messages: (data: { friendId: number, offset: number, limit: number }) => void;
     notify_typing: (to: number, typing: boolean) => void;
+    notify_message_read: (friendId: number, msgReadId: number, timestamp: Date) => void;
+    notify_messages_read: (friendId: number, lastMsgReadId: number, timestamp: Date) => void;
 }
 
 @Injectable({
