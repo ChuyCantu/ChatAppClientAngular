@@ -16,9 +16,16 @@ import { AsyncUsernameValidatorService } from 'src/app/shared/validators/async-u
 export class RegisterPageComponent {
 
     form: FormGroup = this.fb.group({
-        username: ["", [Validators.required, Validators.minLength(3)], [this.usernameValidator]],
-        password: ["", [Validators.required, Validators.minLength(6), Validators.maxLength(12)]],
-        confirm_password: ["", [Validators.required, Validators.minLength(6)]]
+        username: ["", 
+            [Validators.required, Validators.minLength(3), Validators.pattern(/^[\w]*$/)], 
+            [this.usernameValidator]
+        ],
+        password: ["", 
+            [Validators.required, Validators.minLength(6), Validators.maxLength(12), Validators.pattern(/^[-@.!\/#&+\w\s]*$/)]
+        ],
+        confirm_password: ["", 
+            [Validators.required, Validators.minLength(6), Validators.pattern(/^[-@.!\/#&+\w\s]*$/)]
+        ]
     },
     {
         validators: [ this.validatorService.fieldsEqual("password", "confirm_password") ]
