@@ -101,7 +101,6 @@ export class ActiveChatsComponent implements AfterViewInit, OnDestroy {
 
     // Floating Menu
     clearChat(): void {
-        //TODO:
-        // this.chatService.clearMessagesFrom(this.menuActionSelectedFriendId);
+        this.chatService.clearMessagesFrom(this.menuActionSelectedFriendId);
     }
 }

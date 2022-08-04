@@ -337,8 +337,10 @@ export class ChatService {
     }
 
     clearMessagesFrom(friendId: number): void {
-        // TODO: Fix Error
-        this._messages.set(friendId, new Array<Message>());
+        if (this._activeChatFriend?.user.id === friendId)
+            this.clearActiveChat();
+
+        this._messages.delete(friendId);
     }
 
     clearAll(): void {
