@@ -428,4 +428,8 @@ export class ChatService {
         this.clearMessages();
         this.clearActiveChat();
     }
+
+    deleteAccount(): void {
+        this.chatSocket.emit("delete_account");
+    }
 }

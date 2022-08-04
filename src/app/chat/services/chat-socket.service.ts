@@ -29,6 +29,7 @@ export interface ClientToServerEvents {
     reject_friend_request: (friendRequest: FriendRelation) => void;
     cancel_pending_request: (pendingRequest: FriendRelation) => void;
     delete_friend: (friend: FriendRelation) => void;
+    delete_account: () => void;
     send_friend_message: (data: { to: number, content: string }) => void;
     request_friend_messages: (data: { friendId: number, offset: number, limit: number }) => void;
     notify_typing: (to: number, typing: boolean) => void;

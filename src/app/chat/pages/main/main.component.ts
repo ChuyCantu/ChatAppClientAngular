@@ -32,7 +32,8 @@ export class MainComponent implements AfterViewInit, OnDestroy {
     ngOnDestroy(): void {
         const mainPanel = document.getElementById("mainPanel")!;
 
-        mainPanel.removeEventListener("transitionend", this._mainPanelCloseHandler);
+        if (mainPanel)
+            mainPanel.removeEventListener("transitionend", this._mainPanelCloseHandler);
     }
 
     toggleSidePanelVisibility(): void {
