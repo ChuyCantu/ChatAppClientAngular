@@ -85,7 +85,7 @@ export class ChatService {
             }
 
             for (let message of unreadMessages) {
-                const friendId = message.from === myId ? message.to : message.from;
+                const friendId = message.from;
                 if (this._chatsMetadata.has(friendId)) {
                     if (this.activeChatFriendRelation?.user.id === friendId)
                         continue;
