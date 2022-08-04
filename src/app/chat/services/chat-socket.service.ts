@@ -9,7 +9,7 @@ import { FriendRelation, FriendRelationsResponse, Message, SendFriendRequestRepl
 
 export interface ServerToClientEvents {
     friend_relations_loaded: (resp: FriendRelationsResponse) => void;
-    last_friends_message_loaded: (messages: Message[]) => void;
+    last_friends_message_loaded: (messages: Message[], unreadMessages: { count: number, from: number, to: number }[]) => void;
     send_friend_request_reply: (reply: SendFriendRequestReply) => void;
     new_friend_request: (friendRelation: FriendRelation) => void;
     friend_request_accepted: (friendRelation: FriendRelation) => void;

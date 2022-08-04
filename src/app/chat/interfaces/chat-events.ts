@@ -26,6 +26,7 @@ export interface Message {
     to: number;
     content: string;
     sentAt: string; //+ Date string
+    readAt: string | null; //+ Date string
 };
 
 export interface FriendRelations {

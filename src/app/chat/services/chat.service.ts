@@ -74,7 +74,7 @@ export class ChatService {
             }
         });
 
-        socket.on("last_friends_message_loaded", async (messages: Message[]) => {
+        socket.on("last_friends_message_loaded", async (messages: Message[], unreadMessages: { count: number, from: number, to: number }[]) => {
             const myId: number = this.authService.userId;
             for (let message of messages) {
                 const friendId = message.from === myId ? message.to : message.from;
@@ -82,6 +82,25 @@ export class ChatService {
                     this._messages.get(friendId)?.push(message);
                 else
                     this._messages.set(friendId, [message]);
+            }
+
+            for (let message of unreadMessages) {
+                const friendId = message.from === myId ? message.to : message.from;
+                if (this._chatsMetadata.has(friendId)) {
+                    if (this.activeChatFriendRelation?.user.id === friendId)
+                        continue;
+                    else
+                        this._chatsMetadata.get(friendId)!.unreadMessages += message.count;
+                }
+                else {
+                    this._chatsMetadata.set(friendId, {
+                        firstLoadDone: false,
+                        canLoadMoreMessages: true,
+                        unreadMessages: message.count,
+                        busyLoadingOldMessages: false,
+                        typing: false
+                    });
+                }
             }
         });
 
@@ -166,10 +185,10 @@ export class ChatService {
                 metadata!.canLoadMoreMessages = messages.length === this._maxMessagesPerRequest;
                 metadata!.busyLoadingOldMessages = false;
             }
-            //* This should never happen since this events is called only on activated chats:
-            // else {
+            // else { //* This should never happen since this events is called only on activated chats:
             //     this._chatsMetadata.set(friendId, {
-            //         firstLoadDone: false, canLoadMoreMessages: true, unreadMessages: 1
+            //         firstLoadDone: false, canLoadMoreMessages: true, 
+            //         unreadMessages: 0, busyLoadingOldMessages:true, typing: false
             //     });
             // }
 
@@ -182,8 +201,6 @@ export class ChatService {
                 temp.push(message);
             }
 
-            // const firstMsg = messages[0];
-            // const friendId = firstMsg.from === this.authService.userId ? firstMsg.to : firstMsg.from;
             if (this._messages.has(friendId))
                 this._messages.set(friendId, temp.concat(this._messages.get(friendId)!))
             else

@@ -66,7 +66,8 @@ export class ActiveChatsComponent implements AfterViewInit, OnDestroy {
                 from: -1,
                 to: -1,
                 content: "-- invalid message --",
-                sentAt: new Date().toDateString()  
+                sentAt: new Date().toDateString(),
+                readAt: null  
             };
     }
 
