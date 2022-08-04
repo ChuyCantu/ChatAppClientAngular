@@ -53,11 +53,13 @@
 }
 
 .contact p {
-    color: #d3d3d3;
+    color: #b1b1b1;
+    /* color: #d3d3d3; */
     text-overflow: ellipsis;
     white-space: nowrap;
     overflow: hidden;
     margin: 0;
+    width: 80%; /* Added to not cover unread messages badge */
 }
 
 .contact-img {
@@ -90,9 +92,10 @@
 
 .badge {
     position: absolute;
-    left: 75%;
-    top: 50%;
+    bottom: 15%;
+    right: 40px;
     padding: 2px 4px 3px 3px;
+    min-width: 25px;
 }
 
 /* Temp */

@@ -4,6 +4,7 @@ import { AppOptionsService } from '../../services/app-options.service';
 import { ChatService } from '../../services/chat.service';
 import { FloatingElementComponent } from 'src/app/shared/components/floating-element/floating-element.component';
 import { FriendID, FriendRelation, Message, User } from '../../interfaces/chat-events';
+import { AuthService } from 'src/app/auth/services/auth.service';
 
 @Component({
     selector: 'app-active-chats',
@@ -28,16 +29,17 @@ export class ActiveChatsComponent implements AfterViewInit, OnDestroy {
         });
     }
 
-    // get messagesMap(): Map<FriendID, Message[]> {
-    //     return this.chatService.messagesMap;
-    // }
+    get myId(): number {
+        return this.authService.userId;
+    }
 
     get activeChatUser(): number {
         return this.chatService.activeChatFriendRelation?.user.id || -1;
     }
 
     constructor(private chatService: ChatService,
-                private appOptions: AppOptionsService) { }
+                private appOptions: AppOptionsService,
+                private authService: AuthService) { }
 
     ngAfterViewInit(): void {
         document.addEventListener("click", this._outsideFloatingMenuClick);

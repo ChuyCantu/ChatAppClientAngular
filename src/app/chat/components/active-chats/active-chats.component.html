@@ -9,7 +9,9 @@
                 <span class="name">{{ getUserData(message[0]).username }}</span>
                 <span class="date">{{ getLastMessage(message[1]).sentAt | dateSmall }}</span>
             </div>
-            <p *ngIf="!isFriendTyping(message[0]); else typingLabel">{{ getLastMessage(message[1]).content }}</p>
+            <p *ngIf="!isFriendTyping(message[0]); else typingLabel"
+                >{{ getLastMessage(message[1]).from === myId 
+                    ? "You: " + getLastMessage(message[1]).content : getLastMessage(message[1]).content }}</p>
             <ng-template #typingLabel>
                 <p class="typing-label">Typing...</p>
             </ng-template>
@@ -20,37 +22,11 @@
         </div>
 
         <span *ngIf="getUnreadMessages(message[0])"
-            class="badge rounded-pill bg-danger">
+            class="badge rounded-pill bg-success">
             {{ getUnreadMessages(message[0]) > 99 ? "99+" : getUnreadMessages(message[0]) }}
             <span class="visually-hidden">unread messages</span>
         </span>
     </li>
-
-    <!-- <li *ngFor="let message of messagesMap | keyvalue"
-        [class.contact-active]="activeChatUser === message.key"
-        (click)="setActiveChat(message.key)">
-        <div class="contact-img placeholder-img"></div>
-        <div class="contact">
-            <div class="name-container">
-                <span class="name">{{ getUserData(message.key).username }}</span>
-                <span class="date">{{ getLastMessage(message.value).sentAt | dateSmall }}</span>
-            </div>
-            <p *ngIf="!isFriendTyping(message.key); else typingLabel">{{ getLastMessage(message.value).content }}</p>
-            <ng-template #typingLabel>
-                <p class="typing-label">Typing...</p>
-            </ng-template>
-        </div>
-
-        <div class="btn-menu" (click)="showFloatingMenu($event, message.key)">
-            <span class="material-icons">more_vert</span>
-        </div>
-
-        <span *ngIf="getUnreadMessages(message.key)"
-            class="badge rounded-pill bg-danger">
-            {{ getUnreadMessages(message.key) > 99 ? "99+" : getUnreadMessages(message.key) }}
-            <span class="visually-hidden">unread messages</span>
-        </span>
-    </li> -->
 
 </ul>
 
