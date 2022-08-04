@@ -18,9 +18,19 @@ export class ActiveChatsComponent implements AfterViewInit, OnDestroy {
 
     private menuActionSelectedFriendId!: number;
 
-    get messagesMap(): Map<FriendID, Message[]> {
-        return this.chatService.messagesMap;
+    get messagesMap(): [FriendID, Message[]][] {
+        return [...this.chatService.messagesMap].sort((a, b) => {
+            const lastA = new Date(a[1][a[1].length - 1].sentAt);
+            const lastB = new Date(b[1][b[1].length - 1].sentAt);
+            if (lastA < lastB) return 1;
+            else if (lastA > lastB) return -1;
+            else return 0;
+        });
     }
+
+    // get messagesMap(): Map<FriendID, Message[]> {
+    //     return this.chatService.messagesMap;
+    // }
 
     get activeChatUser(): number {
         return this.chatService.activeChatFriendRelation?.user.id || -1;

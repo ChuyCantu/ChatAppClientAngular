@@ -1,6 +1,32 @@
 <ul class="contact-list h-100 overflow-auto thin-scrollbar gutter-stable">
 
-    <li *ngFor="let message of messagesMap | keyvalue"
+    <li *ngFor="let message of messagesMap"
+        [class.contact-active]="activeChatUser === message[0]"
+        (click)="setActiveChat(message[0])">
+        <div class="contact-img placeholder-img"></div>
+        <div class="contact">
+            <div class="name-container">
+                <span class="name">{{ getUserData(message[0]).username }}</span>
+                <span class="date">{{ getLastMessage(message[1]).sentAt | dateSmall }}</span>
+            </div>
+            <p *ngIf="!isFriendTyping(message[0]); else typingLabel">{{ getLastMessage(message[1]).content }}</p>
+            <ng-template #typingLabel>
+                <p class="typing-label">Typing...</p>
+            </ng-template>
+        </div>
+
+        <div class="btn-menu" (click)="showFloatingMenu($event, message[0])">
+            <span class="material-icons">more_vert</span>
+        </div>
+
+        <span *ngIf="getUnreadMessages(message[0])"
+            class="badge rounded-pill bg-danger">
+            {{ getUnreadMessages(message[0]) > 99 ? "99+" : getUnreadMessages(message[0]) }}
+            <span class="visually-hidden">unread messages</span>
+        </span>
+    </li>
+
+    <!-- <li *ngFor="let message of messagesMap | keyvalue"
         [class.contact-active]="activeChatUser === message.key"
         (click)="setActiveChat(message.key)">
         <div class="contact-img placeholder-img"></div>
@@ -24,7 +50,7 @@
             {{ getUnreadMessages(message.key) > 99 ? "99+" : getUnreadMessages(message.key) }}
             <span class="visually-hidden">unread messages</span>
         </span>
-    </li>
+    </li> -->
 
 </ul>
 
