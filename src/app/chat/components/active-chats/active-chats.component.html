@@ -15,7 +15,7 @@
             </ng-template>
         </div>
 
-        <div class="btn-menu" (click)="showFloatingMenu($event)">
+        <div class="btn-menu" (click)="showFloatingMenu($event, message.key)">
             <span class="material-icons">more_vert</span>
         </div>
 
@@ -29,9 +29,13 @@
 </ul>
 
 <app-floating-element #floatingMenu>
-    <ul class="floating-menu">
-        <li>asdas</li>
-        <li>asdas</li>
-        <li>asdas</li>
+    <ul class="floating-menu" (click)="floatingMenu.hide()">
+        <!-- <li (click)="clearChat()">
+            <span class="material-icons">clear</span>
+            <span>Clear Chat</span>
+        </li> -->
+        <li>
+            Temporary Empty
+        </li>
     </ul>
 </app-floating-element>

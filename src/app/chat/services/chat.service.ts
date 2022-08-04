@@ -245,6 +245,8 @@ export class ChatService {
     }
 
     deleteFriend(friend: FriendRelation): void {
+        if (!friend) return;
+
         this.chatSocket.emit("delete_friend", friend);
 
         if (!this._friendRelations) return;
@@ -324,14 +326,19 @@ export class ChatService {
         });
     }
 
-    clearFriendRelations():void {
+    clearFriendRelations(): void {
         this._friendRelations.friends.clear();
         this._friendRelations.pendingRequests = [];
         this._friendRelations.friendRequests = [];
     }
 
-    clearMessages():void {
+    clearMessages(): void {
         this._messages.clear();
+    }
+
+    clearMessagesFrom(friendId: number): void {
+        // TODO: Fix Error
+        this._messages.set(friendId, new Array<Message>());
     }
 
     clearAll(): void {

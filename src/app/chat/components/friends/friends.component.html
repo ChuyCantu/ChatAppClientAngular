@@ -10,17 +10,18 @@
         </div>
         <!-- <span (click)="openDeleteFriendConfirmation(friend.value)"
             class="material-icons btn-menu">more_vert</span> -->
-        <div class="btn-menu" (click)="showFloatingMenu($event)">
+        <div class="btn-menu" (click)="showFloatingMenu($event, friend.value)">
             <span class="material-icons">more_vert</span>
         </div>
     </li>
 
 </ul>
 
-<app-floating-element #floatingMenu>
+<app-floating-element #floatingMenu (click)="floatingMenu.hide()">
     <ul class="floating-menu">
-        <li>asdas</li>
-        <li>asdas</li>
-        <li>asdas</li>
+        <li (click)="openDeleteFriendConfirmation()">
+            <span class="material-icons">person_remove</span>
+            <span class="text-danger">Remove Friend</span>
+        </li>
     </ul>
 </app-floating-element>

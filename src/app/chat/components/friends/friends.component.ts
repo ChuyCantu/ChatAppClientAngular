@@ -18,6 +18,8 @@ export class FriendsComponent implements AfterViewInit, OnDestroy {
 
     _outsideFloatingMenuClick = (e: Event) => this.hideFloatingMenu(e);
 
+    private menuActionSelectedFriendRelation!: FriendRelation;
+
     get friends(): Map<FriendID, FriendRelation> {
         return this.chatService.friendRelations.friends;
     }
@@ -33,23 +35,6 @@ export class FriendsComponent implements AfterViewInit, OnDestroy {
         document.removeEventListener("click", this._outsideFloatingMenuClick);
     }
 
-    openDeleteFriendConfirmation(friend: FriendRelation): void {
-        Swal.fire({
-            title: 'Are you sure?',
-            text: "This will delete this user from your friends!",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Yes, delete it!'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                this.deleteFriend(friend);
-            }
-        })
-
-    }
-
     deleteFriend(friend: FriendRelation): void {
         this.chatService.deleteFriend(friend);
     }
@@ -62,9 +47,10 @@ export class FriendsComponent implements AfterViewInit, OnDestroy {
             this.appOptions.closeSidePanel();
     }
 
-    showFloatingMenu(e: MouseEvent): void {
+    showFloatingMenu(e: MouseEvent, friend: FriendRelation): void {
         e.stopPropagation();
         this.floatingMenu.show(e.target as HTMLElement);
+        this.menuActionSelectedFriendRelation = friend;
     }
 
     hideFloatingMenu(e: Event): void {
@@ -73,5 +59,23 @@ export class FriendsComponent implements AfterViewInit, OnDestroy {
                 .contains(e.target as HTMLElement)) {
             this.floatingMenu.hide();
         }
+    }
+
+    // Floating Menu
+    openDeleteFriendConfirmation(): void {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "This will delete this user from your friends!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                this.deleteFriend(this.menuActionSelectedFriendRelation);
+            }
+        })
+
     }
 }

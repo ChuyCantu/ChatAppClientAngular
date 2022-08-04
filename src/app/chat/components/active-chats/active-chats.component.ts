@@ -3,7 +3,7 @@ import { AfterViewInit, Component, OnDestroy, ViewChild } from '@angular/core';
 import { AppOptionsService } from '../../services/app-options.service';
 import { ChatService } from '../../services/chat.service';
 import { FloatingElementComponent } from 'src/app/shared/components/floating-element/floating-element.component';
-import { FriendID, Message, User } from '../../interfaces/chat-events';
+import { FriendID, FriendRelation, Message, User } from '../../interfaces/chat-events';
 
 @Component({
     selector: 'app-active-chats',
@@ -15,6 +15,8 @@ export class ActiveChatsComponent implements AfterViewInit, OnDestroy {
     @ViewChild("floatingMenu") floatingMenu!: FloatingElementComponent;
 
     _outsideFloatingMenuClick = (e: Event) => this.hideFloatingMenu(e);
+
+    private menuActionSelectedFriendId!: number;
 
     get messagesMap(): Map<FriendID, Message[]> {
         return this.chatService.messagesMap;
@@ -73,9 +75,10 @@ export class ActiveChatsComponent implements AfterViewInit, OnDestroy {
         return this.chatService.chatsMetadata.get(friendId)?.typing || false;
     }
 
-    showFloatingMenu(e: MouseEvent): void {
+    showFloatingMenu(e: MouseEvent, friendId: number): void {
         e.stopPropagation();
         this.floatingMenu.show(e.target as HTMLElement);
+        this.menuActionSelectedFriendId = friendId;
     }
 
     hideFloatingMenu(e: Event): void {
@@ -84,5 +87,11 @@ export class ActiveChatsComponent implements AfterViewInit, OnDestroy {
                 .contains(e.target as HTMLElement)) {
             this.floatingMenu.hide();
         }
+    }
+
+    // Floating Menu
+    clearChat(): void {
+        //TODO:
+        // this.chatService.clearMessagesFrom(this.menuActionSelectedFriendId);
     }
 }
