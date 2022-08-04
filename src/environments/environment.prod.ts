@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  backendApiUrl: "http://localhost:4000"
+  backendApiUrl: "https://nd-chatapp.herokuapp.com"
 };
