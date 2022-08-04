@@ -16,16 +16,24 @@ export class FloatingElementComponent implements AfterViewInit {
     @ViewChild("container") containerRef!: ElementRef<HTMLElement>;
     @ViewChild("arrow") arrowElemRef!: ElementRef<HTMLElement>;
 
+    _isVisible: boolean = false;
+
+    get isVisible(): boolean {
+        return this._isVisible;
+    }
+
     ngAfterViewInit(): void {
         this.arrowElemRef.nativeElement.style.backgroundColor = this.arrowColor;
     }
 
     show(referenceElement: HTMLElement): void {
+        this._isVisible = true;
         this.containerRef.nativeElement.style.display = "block";
         this.updateElementPosition(referenceElement);
     }
 
     hide(): void {
+        this._isVisible = false;
         this.containerRef.nativeElement.style.display = "";
     }
 

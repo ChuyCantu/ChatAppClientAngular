@@ -8,8 +8,19 @@
                 <span class="name">{{ friend.value.user.username }}</span>
             </div>
         </div>
-        <span (click)="openDeleteFriendConfirmation(friend.value)"
-            class="material-icons btn-menu">more_vert</span>
+        <!-- <span (click)="openDeleteFriendConfirmation(friend.value)"
+            class="material-icons btn-menu">more_vert</span> -->
+        <div class="btn-menu" (click)="showFloatingMenu($event)">
+            <span class="material-icons">more_vert</span>
+        </div>
     </li>
 
 </ul>
+
+<app-floating-element #floatingMenu>
+    <ul class="floating-menu">
+        <li>asdas</li>
+        <li>asdas</li>
+        <li>asdas</li>
+    </ul>
+</app-floating-element>

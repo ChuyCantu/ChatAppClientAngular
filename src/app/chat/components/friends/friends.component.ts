@@ -1,6 +1,8 @@
-import { Component } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, ViewChild } from '@angular/core';
+
 import Swal from 'sweetalert2';
 
+import { FloatingElementComponent } from 'src/app/shared/components/floating-element/floating-element.component';
 import { FriendID, FriendRelation } from '../../interfaces/chat-events';
 import { AppOptionsService, SidePanelTab } from '../../services/app-options.service';
 import { ChatService } from '../../services/chat.service';
@@ -10,7 +12,11 @@ import { ChatService } from '../../services/chat.service';
     templateUrl: './friends.component.html',
     styleUrls: ['./friends.component.css']
 })
-export class FriendsComponent {
+export class FriendsComponent implements AfterViewInit, OnDestroy {
+
+    @ViewChild("floatingMenu") floatingMenu!: FloatingElementComponent;
+
+    _outsideFloatingMenuClick = (e: Event) => this.hideFloatingMenu(e);
 
     get friends(): Map<FriendID, FriendRelation> {
         return this.chatService.friendRelations.friends;
@@ -18,6 +24,14 @@ export class FriendsComponent {
 
     constructor(private chatService: ChatService,
                 private appOptions: AppOptionsService) { }
+
+    ngAfterViewInit(): void {
+        document.addEventListener("click", this._outsideFloatingMenuClick);
+    }
+
+    ngOnDestroy(): void {
+        document.removeEventListener("click", this._outsideFloatingMenuClick);
+    }
 
     openDeleteFriendConfirmation(friend: FriendRelation): void {
         Swal.fire({
@@ -46,5 +60,18 @@ export class FriendsComponent {
 
         if (window.innerWidth < this.appOptions.mobileMaxSize)
             this.appOptions.closeSidePanel();
+    }
+
+    showFloatingMenu(e: MouseEvent): void {
+        e.stopPropagation();
+        this.floatingMenu.show(e.target as HTMLElement);
+    }
+
+    hideFloatingMenu(e: Event): void {
+        if (this.floatingMenu.isVisible &&
+            !this.floatingMenu.containerRef.nativeElement
+                .contains(e.target as HTMLElement)) {
+            this.floatingMenu.hide();
+        }
     }
 }
