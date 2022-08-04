@@ -27,6 +27,8 @@ export class ValidatorService {
             //+ We can use this instead:
             if (control2?.errors && control2?.errors["differentValues"]) {
                 delete control2.errors["differentValues"];
+                if (Object.entries(control2.errors).length === 0)
+                    control2.setErrors(null);
             }
             return null;
         }

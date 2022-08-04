@@ -18,7 +18,7 @@
             class="form-text text-danger">
             {{ form.get('username')?.errors?.hasOwnProperty('usernameTaken') 
                 ? 'The username is already taken' 
-                : 'The username must be 3 or more letters, numbers or _' }}
+                : 'The username must have 3 or more letters, numbers or _' }}
         </span>
     </section>
 
