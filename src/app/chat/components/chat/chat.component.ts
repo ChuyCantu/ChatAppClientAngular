@@ -17,30 +17,27 @@ export class ChatComponent implements OnInit, AfterViewInit, AfterViewChecked, O
     @ViewChild("input") inputRef!: ElementRef<HTMLInputElement>;
     @ViewChild("emojiPicker") emojiPickerRef!: ElementRef<HTMLElement>;
     @ViewChild("topChatElement") topChatElementRef!: ElementRef<HTMLElement>;
+    @ViewChild("bottomChatElement") bottomChatElementRef!: ElementRef<HTMLElement>;
 
     typingDebouncer: Subject<string> = new Subject<string>();
     private _typing: boolean = false;
 
     emojiPickerVisible: boolean = false;
-    showScrollToBottomButton: boolean = false;
+    // showScrollToBottomButton: boolean = false;
+    isScrollAtTheBottom: boolean = true;
     
     private appearAtTheBottom: boolean = true;
     private lastScrollHeight: number = 0;
     private prevInsertedDate: string = ""; // Used for the chat UI only
 
-    private _intersectionObserver!: IntersectionObserver;
+    private _intersectionTopObserver!: IntersectionObserver;
+    private _intersectionBottomObserver!: IntersectionObserver;
     private _sidePanelOpenEndSubscription!: Subscription;
     private newMsgScrollSubscription!: Subscription;
     private oldMsgReceivedSubscription!: Subscription;
     private activeChatChangedSubscription!: Subscription;
     private _emojiPickerEventListener = 
         (e: Event) => this.emojiPickerClickHandler(e);
-    private _scrollHandler = (e: Event) => {
-        const scrollOnBottom = this.isScrollAtTheBottom();
-        if (this.showScrollToBottomButton === scrollOnBottom) {
-            this.showScrollToBottomButton = !scrollOnBottom;
-        }
-    };
     
     get messages(): Message[] {
         return this.chatService.getMessagesFrom(this.chatService.activeChatFriendRelation?.user.id!);
@@ -84,17 +81,17 @@ export class ChatComponent implements OnInit, AfterViewInit, AfterViewChecked, O
 
     ngOnInit(): void {
         this.newMsgScrollSubscription = this.chatService.onNewMessageReceived.subscribe(() => {
-            if (!this.isScrollAtTheBottom()) return;
+            if (!this.isScrollAtTheBottom) return;
 
             // Wait for change to reflect on the DOM
-            setTimeout(() => this.scrollToBottom(), 0);
+            setTimeout(() => this.scrollToBottom(), 100);
         });
 
         this.oldMsgReceivedSubscription = this.chatService.onFriendMessagesReceived.subscribe(() => {
-            if (!this.isScrollAtTheBottom()) return;
+            if (!this.isScrollAtTheBottom) return;
             
             // Wait for change to reflect on the DOM
-            setTimeout(() => this.scrollToBottom(), 0);
+            setTimeout(() => this.scrollToBottom(), 100);
         });
 
         this.activeChatChangedSubscription = this.chatService.onActiveChatChanged.subscribe(() => {
@@ -138,24 +135,32 @@ export class ChatComponent implements OnInit, AfterViewInit, AfterViewChecked, O
 
         // Also listen to scroll events to show/hide floating button
         const chat = this.chatRef.nativeElement;
-        chat.addEventListener("scroll", this._scrollHandler);
+        
+        this._intersectionBottomObserver = new IntersectionObserver(
+            (entries: IntersectionObserverEntry[], observer: IntersectionObserver) => {
+            this.isScrollAtTheBottom = entries[0].isIntersecting;
+        }, {
+            root: chat,
+            rootMargin: "25px",
+            threshold: 1
+        });
+        this._intersectionBottomObserver.observe(this.bottomChatElementRef.nativeElement);
 
         // Set up intersection detection to the top element
-        this._intersectionObserver = new IntersectionObserver(
+        this._intersectionTopObserver = new IntersectionObserver(
             (entries: IntersectionObserverEntry[], observer: IntersectionObserver) => {
             if (!entries[0].isIntersecting || !this.activeChatFriendRelation || this.busy) return;
 
             if (this.chatService.chatsMetadata.get(this.activeChatFriendRelation.user.id)?.canLoadMoreMessages) {
                 this.chatService.requestPastMessages(this.activeChatFriendRelation!.user.id);
                 this.lastScrollHeight = chat.scrollHeight;
-                console.log(entries)
             }
         }, {
            root: chat,
            rootMargin: "0px",
            threshold: 1
         });
-        this._intersectionObserver.observe(this.topChatElementRef.nativeElement);
+        this._intersectionTopObserver.observe(this.topChatElementRef.nativeElement);
     }
 
     ngAfterViewChecked(): void {
@@ -175,12 +180,12 @@ export class ChatComponent implements OnInit, AfterViewInit, AfterViewChecked, O
 
     ngOnDestroy(): void {
         document.removeEventListener('click', this._emojiPickerEventListener);
-        this.chatRef.nativeElement.removeEventListener("scroll", this._scrollHandler);
         this.newMsgScrollSubscription.unsubscribe();
         this.oldMsgReceivedSubscription.unsubscribe();
         this.activeChatChangedSubscription.unsubscribe();
         this._sidePanelOpenEndSubscription.unsubscribe();
-        this._intersectionObserver.disconnect();
+        this._intersectionTopObserver.disconnect();
+        this._intersectionBottomObserver.disconnect();
     }
 
     send(): void {
@@ -252,11 +257,6 @@ export class ChatComponent implements OnInit, AfterViewInit, AfterViewChecked, O
 
     isScrollAtTheTop(): boolean {
         return this.chatRef.nativeElement.scrollTop === 0;
-    }
-
-    isScrollAtTheBottom(): boolean {
-        const chat = this.chatRef.nativeElement;
-        return chat.scrollHeight - chat.scrollTop === chat.clientHeight;
     }
 
     scrollToBottom(smooth: boolean = true): void {

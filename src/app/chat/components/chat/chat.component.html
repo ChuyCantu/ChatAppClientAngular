@@ -45,12 +45,15 @@
                     </p>
                 </section>
             </ng-container>
+
+            <!-- Bottom detection -->
+            <div #bottomChatElement></div>
         </section>
 
-        <button *ngIf="showScrollToBottomButton"
+        <button *ngIf="!isScrollAtTheBottom"
             (click)="scrollToBottom()"
             class="btn btn-dark scroll-btn">
-            <span class="material-icons">keyboard_double_arrow_down</span>
+            <span class="material-icons">keyboard_arrow_down</span>
         </button>
 
         <div *ngIf="busy" class="loading">

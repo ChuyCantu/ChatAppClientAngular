@@ -61,8 +61,6 @@ export class ChatService {
 
     //! This should be called in the app.component so anything that depend on these events don't fail
     registerSocketEvents(socket: Socket<ServerToClientEvents, ClientToServerEvents>): void {
-        console.log("Registering chat events...");
-
         socket.on("friend_relations_loaded", async (resp: FriendRelationsResponse) => {
             this._friendRelations = {
                 friends: new Map<FriendID, FriendRelation>(),
@@ -159,7 +157,6 @@ export class ChatService {
             if (this.activeChatFriendRelation?.user.id === friendId
                 && message.from != this.authService.userId) {
                 const now = new Date();
-                console.log(1, now);
                 
                 message.readAt = now.toISOString();
                 this.notifyMessageRead(friendId, message.id!, now); 
