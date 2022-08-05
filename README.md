@@ -1,5 +1,9 @@
 # ChatAppClient
 
+This project uses a backend created with Express that can be found [here](https://github.com/ChuyCantu/ChatAppServerExpress).
+
+You can find the live version hosted in heroku [here](https://nd-chatapp.herokuapp.com).
+
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 14.0.4.
 
 ## Development server
