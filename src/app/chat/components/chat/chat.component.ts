@@ -25,6 +25,7 @@ export class ChatComponent implements OnInit, AfterViewInit, AfterViewChecked, O
     emojiPickerVisible: boolean = false;
     // showScrollToBottomButton: boolean = false;
     isScrollAtTheBottom: boolean = true;
+    stickyScrollWhileTyping = false;
     
     private appearAtTheBottom: boolean = true;
     private lastScrollHeight: number = 0;
@@ -141,7 +142,7 @@ export class ChatComponent implements OnInit, AfterViewInit, AfterViewChecked, O
             this.isScrollAtTheBottom = entries[0].isIntersecting;
         }, {
             root: chat,
-            rootMargin: "25px",
+            rootMargin: "0px",
             threshold: 1
         });
         this._intersectionBottomObserver.observe(this.bottomChatElementRef.nativeElement);
@@ -207,8 +208,16 @@ export class ChatComponent implements OnInit, AfterViewInit, AfterViewChecked, O
 
         if (!this._typing) {
             this._typing = true;
+            this.stickyScrollWhileTyping = this.isScrollAtTheBottom;
             this.chatService.notifyTyping(this.activeChatFriendRelation?.user.id!, true);
         }
+
+        // If the scroll is pushed and we want it to stick at the bottom, scroll it down
+        setTimeout(() => {
+            if (!this.isScrollAtTheBottom && this.stickyScrollWhileTyping) {
+                this.scrollToBottom(false);
+            }
+        }, 5);
     }
 
     emojiClick(emojiEvent: any): void {
