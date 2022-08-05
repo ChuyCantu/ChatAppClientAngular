@@ -191,6 +191,8 @@ export class ChatComponent implements OnInit, AfterViewInit, AfterViewChecked, O
 
     send(): void {
         const input: HTMLInputElement = this.inputRef.nativeElement;
+
+        input.focus();
         
         if (input.innerText === "") return;
 
