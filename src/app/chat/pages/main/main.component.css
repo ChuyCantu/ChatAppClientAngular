@@ -1,6 +1,7 @@
 .menu {
     display: block;
-    height: 100vh;
+    /* height: 100vh; */
+    height: 100%;
     left: 0;
     position: fixed;
     width: 100vw;
@@ -11,7 +12,8 @@
 
 .chat-panel {
     display: block;
-    height: 100vh;
+    /* height: 100vh; */
+    height: 100%;
     position: relative;
     z-index: 1;
 
